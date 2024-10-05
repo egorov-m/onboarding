@@ -2,7 +2,6 @@ import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import webpack from 'webpack';
 import 'webpack-dev-server';
-import { config } from 'process';
 
 type Mode = 'development' | 'production';
 
@@ -23,27 +22,37 @@ module.exports = (env: EnvVariables) => {
         },
         module: {
             rules: [
-                { test: /\.([cm]?ts|tsx)$/, 
-                loader: "ts-loader", 
-                exclude: /node_modules/, }
+                {
+                    test: /\.(ts|tsx)$/,
+                    use: 'ts-loader',
+                    exclude: /node_modules/,
+                },
+                {
+                    test: /\.css$/,
+                    use: ['style-loader', 'css-loader'],
+                },
+                {
+                    test: /\.(png|jpe?g|gif|svg)$/,
+                    type: 'asset/resource',
+                }
             ],
         },
         resolve: {
             extensions: ['.tsx', '.ts', '.js'],
         },
         plugins: [
-            new HtmlWebpackPlugin({ template: path.resolve(__dirname, "public", "index.html") }),
+            new HtmlWebpackPlugin({
+                template: path.resolve(__dirname, 'public', 'index.html'),
+            }),
             new webpack.ProgressPlugin(),
-          ],
-        devtool: isDev ? 'inline-source-map': false, 
+        ],
+        devtool: isDev ? 'inline-source-map' : false,
         devServer: isDev ? {
-            port: env.port ?? 3000,
+            port: env.port || 3000,
             open: true,
-        }: undefined,
-
-        mode: env.mode ?? "development"
-    }
+            hot: true,
+        } : undefined,
+        mode: env.mode || 'development',
+    };
     return config;
 };
-
-export default config;

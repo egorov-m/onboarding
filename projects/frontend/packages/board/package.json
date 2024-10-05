@@ -1,0 +1,15 @@
+{
+    "name": "board",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "start": "webpack serve",
+        "build:dev": "webpack --env mode=development",
+        "build:prod": "webpack --env mode=production"
+    },
+    "dependencies": {
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "shared": "1.0.0"
+    }
+}

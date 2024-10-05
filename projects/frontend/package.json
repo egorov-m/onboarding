@@ -1,24 +1,26 @@
 {
   "name": "frontend",
   "version": "0.1.0",
+  "workspaces": [
+    "packages/*"
+  ],
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "lerna": "^8.1.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-scripts": "5.0.1",
     "ts-loader": "^9.5.1",
-    "typescript": "^5.6.2",
+    "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "webpack serve",
-    "build:dev": "webpack --env mode=development",
-    "build:prod": "webpack --env mode=production",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start-board": "lerna run start --scope board",
+    "start-onboarding": "lerna run start --scope onboarding",
+    "build": "lerna run build"
   },
   "eslintConfig": {
     "extends": [
