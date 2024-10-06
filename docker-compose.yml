@@ -11,6 +11,72 @@ x-common-security-opt: &common-security-opt
     - no-new-privileges:true
 
 services:
+  onboarding-api:
+    build:
+      context: projects/backend
+      dockerfile: onboarding-api/docker/Dockerfile
+      target: production
+      args:
+        - BASE_IMAGE=${ONBOARDING_API_BASE_IMAGE}
+    container_name: ${PROJECT_NAME}_onboarding-api
+    environment:
+      - SERVER_DOMAIN_NAME=${DOMAIN_NAME}
+      - SERVER_PROTOCOL=https
+      - SERVER_PATH_PREFIX=${ONBOARDING_API_PATH_PREFIX}
+    networks:
+      - onboarding-db
+      - onboarding-api-proxy
+    depends_on:
+      traefik:
+        condition: service_healthy
+      onboarding-db:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - onboarding
+      - all
+    <<: *common-security-opt
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: "512m"
+      <<: *common-restart-policy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.onboarding-api-rtr.entrypoints=websecure"
+      - "traefik.http.routers.onboarding-api-rtr.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`${ONBOARDING_API_PATH_PREFIX}`)"
+      - "traefik.http.routers.onboarding-api-rtr.tls=true"
+      - "traefik.http.routers.onboarding-api-rtr.service=onboarding-api-svc"
+      - "traefik.http.services.onboarding-api-svc.loadbalancer.server.port=80"
+      - "traefik.http.routers.onboarding-api-rtr.middlewares=chain-oauth@file"
+
+  onboarding-db:
+    image: ${ONBOARDING_DB_IMAGE}
+    container_name: ${PROJECT_NAME}_onboarding-db
+    environment:
+      - POSTGRES_PASSWORD=${ONBOARDING_DB_PASSWORD}
+      - POSTGRES_USER=${ONBOARDING_DB_USER}
+      - POSTGRES_DB=${ONBOARDING_DB_NAME}
+    networks:
+      - onboarding-db
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${ONBOARDING_DB_USER} -d ${ONBOARDING_DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    profiles:
+      - infra
+      - all
+    <<: *common-security-opt
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512m"
+      <<: *common-restart-policy
+
   docker-socket-proxy:
     image: ${DOCKER_SOCKET_PROXY_IMAGE}
     container_name: ${PROJECT_NAME}_docker-socket-proxy
@@ -53,6 +119,7 @@ services:
       - ${DEPLOY_DIR}/projects/3rdparty/traefik3/rules:/rules:ro
       - ${DEPLOY_DIR}/data/logs/traefik:/logs
     networks:
+      - onboarding-api-proxy
       - docker-socket-proxy
       - oauth2-proxy
       - dex-proxy
@@ -178,19 +245,6 @@ services:
       - --upstream-timeout=30s
       - --upstream="static://202"
 
-  whoami:
-    image: docker.io/containous/whoami
-    networks:
-      - oauth2-proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami-rtr.entrypoints=websecure"
-      - "traefik.http.routers.whoami-rtr.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`/onboarding`)"
-      - "traefik.http.routers.whoami-rtr.tls=true"
-      - "traefik.http.routers.whoami-rtr.service=whoami-svc"
-      - "traefik.http.services.whoami-svc.loadbalancer.server.port=80"
-      - "traefik.http.routers.whoami-rtr.middlewares=chain-oauth@file"
-
   dex:
     image: ${DEX_IMAGE}
     container_name: ${PROJECT_NAME}_dex
@@ -274,6 +328,8 @@ services:
 
 networks:
   default:
+  onboarding-db:
+  onboarding-api-proxy:
   docker-socket-proxy:
   dex-proxy:
   dex:
