@@ -1,30 +1,28 @@
 import React, { FC } from "react";
-import { Link } from 'react-router-dom';
 
 import * as styles from './Navbar.styles';
 
-export const Navbar: FC = () => (
-    <styles.NavbarContainer>
+interface NavbarProps {
+  links: { to: string, label: string }[];
+}
+
+export const Navbar: FC<NavbarProps> = ({ links }) => (
+  <styles.NavbarContainer>
     <styles.NavbarContent>
-      <styles.NavItemsContainer>
-        <styles.Logo>
-          <styles.StyledLink to="/">Logo</styles.StyledLink>
-        </styles.Logo>
-
+      <styles.LeftSide>
+        <styles.StyledLink to={links[0].to}>{links[0].label}</styles.StyledLink>
         <styles.NavLinks>
-          <li>
-            <styles.StyledLink to="/analyst">Analyst</styles.StyledLink>
-          </li>
-          <li>
-            <styles.StyledLink to="/projects">Projects</styles.StyledLink>
-          </li>
+          {links.slice(1, -1).map((link, index) => (
+            <li key={index}>
+              <styles.StyledLink to={link.to}>{link.label}</styles.StyledLink>
+            </li>
+          ))}
         </styles.NavLinks>
-      </styles.NavItemsContainer>
+      </styles.LeftSide>
 
-      <styles.LogoutLink>
-        <styles.StyledLink to="/logout">Log Out</styles.StyledLink>
-      </styles.LogoutLink>
+      <styles.StyledLink to={links[links.length - 1].to}>
+        {links[links.length - 1].label}
+      </styles.StyledLink>
     </styles.NavbarContent>
   </styles.NavbarContainer>
-)
-
+);

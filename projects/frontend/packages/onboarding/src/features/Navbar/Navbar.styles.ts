@@ -1,9 +1,11 @@
 import styled from 'styled-components';
 import { Link as RouterLink } from 'react-router-dom';
+import {Colors} from '../../../../shared/constants/Colors';
 
 export const NavbarContainer = styled.nav`
   width: 100%;
-  background-color: #333;
+  background-color: ${Colors.Orochimaru};
+  padding: 1.5rem 0;
 `;
 
 export const NavbarContent = styled.div`
@@ -13,18 +15,11 @@ export const NavbarContent = styled.div`
   width: 90%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 0;
 `;
 
-export const Logo = styled.div`
-  font-size: 1.5rem;
-  color: white;
-`;
-
-export const NavItemsContainer = styled.div`
+export const LeftSide = styled.div`
   display: flex;
   align-items: center;
-  gap: 1.5rem;
 `;
 
 export const NavLinks = styled.ul`
@@ -33,24 +28,12 @@ export const NavLinks = styled.ul`
   margin: 0;
   padding: 0;
   gap: 1.5rem;
+  margin-left: 2rem;
 `;
-
 
 export const StyledLink = styled(RouterLink)`
-  color: white;
+  color: ${Colors.Black};
   text-decoration: none;
   font-size: 1.2rem;
-
-  &:hover {
-    color: #ff6347;
-  }
-
-  &.active {
-    font-weight: bold;
-    border-bottom: 2px solid white;
-  }
-`;
-
-export const LogoutLink = styled.div`
-  margin-left: auto;
+  font-family: 'Montserrat', sans-serif;
 `;
