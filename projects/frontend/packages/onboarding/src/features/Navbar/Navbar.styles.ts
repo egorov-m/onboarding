@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Link as RouterLink } from 'react-router-dom';
 import {Colors} from '../../../../shared/constants/Colors';
+import { Container } from 'shared/ui/layout/Container';
 
 export const NavbarContainer = styled.nav`
   width: 100%;
@@ -8,13 +9,10 @@ export const NavbarContainer = styled.nav`
   padding: 1.5rem 0;
 `;
 
-export const NavbarContent = styled.div`
+export const NavbarContent = styled(Container)`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto;
 `;
 
 export const LeftSide = styled.div`
