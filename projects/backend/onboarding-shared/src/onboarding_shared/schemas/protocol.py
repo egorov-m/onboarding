@@ -8,12 +8,18 @@ from pydantic import (
     condecimal,
     conint,
     HttpUrl,
-    constr
+    constr,
 )
+
+from ..exceptions import ApiErrorCode
 
 
 class BaseSchema(BaseModel):
     ...
+
+
+class ErrorResponse(BaseSchema):
+    errors: List[ApiErrorCode]
 
 
 class SortObject(BaseSchema):
@@ -68,7 +74,7 @@ class BoardInfo(BaseSchema):
     name: str
     created_at: datetime
     updated_at: datetime
-    average_rating: condecimal(ge=0, le=5)
+    average_rating: float
     status: BoardStatus
 
 
@@ -123,6 +129,7 @@ class BoardStep(BaseSchema):
     type: BoardStepType
     title: str
     text: str
+    index: int
     blobs: Optional[List[Blob]]
     created_at: datetime
     updated_at: datetime
@@ -132,11 +139,13 @@ class CreateBoardStepRequest(BaseSchema):
     board_id: UUID
     title: constr(min_length=0, max_length=256)
     text: Optional[constr(min_length=0, max_length=4096)] = None
+    index: conint(ge=0, le=100)
 
 
 class UpdateBoardStepRequest(BaseSchema):
     title: Optional[constr(min_length=0, max_length=256)] = None
     text: Optional[constr(min_length=0, max_length=4096)] = None
+    index: Optional[conint(ge=0, le=100)] = None
 
 
 class BoardStepListResponse(_ListResponse):
