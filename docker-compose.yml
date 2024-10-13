@@ -23,6 +23,14 @@ services:
       - SERVER_DOMAIN_NAME=${DOMAIN_NAME}
       - SERVER_PROTOCOL=https
       - SERVER_PATH_PREFIX=${ONBOARDING_API_PATH_PREFIX}
+      - DEBUG=False
+      - WORKERS=${ONBOARDING_API_WORKERS}
+      - WORKER_TIMEOUT=${ONBOARDING_API_WORKER_TIMEOUT}
+      - DB_HOST=${ONBOARDING_DB_HOST}
+      - DB_PORT=${ONBOARDING_DB_PORT}
+      - DB_NAME=${ONBOARDING_DB_NAME}
+      - DB_USER=${ONBOARDING_DB_USER}
+      - DB_PASSWORD=${ONBOARDING_DB_PASSWORD}
     networks:
       - onboarding-db
       - onboarding-api-proxy

@@ -54,8 +54,14 @@ RUN poetry install
 
 EXPOSE 80
 
-ENTRYPOINT ["poetry", "run", "uvicorn"]
-CMD ["--reload", "--host", "0.0.0.0", "--port", "80", "--log-level", "debug", "onboarding_api.main:router"]
+ENTRYPOINT ["sh", "-c", "poetry run alembic \
+                         -c /opt/pysetup/alembic.ini upgrade head &&\
+                         poetry run uvicorn \
+                         --reload \
+                         --host 0.0.0.0 \
+                         --port 80 \
+                         --log-level debug \
+                         onboarding_api.main:router"]
 
 FROM python-base as production
 
