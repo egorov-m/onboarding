@@ -65,7 +65,8 @@ module.exports = (env: EnvVariables) => {
           hot: true,
           static: {
             directory: path.resolve(__dirname, "public"),
-          }
+          },
+          allowedHosts: "all"
         }
       : undefined,
     mode: env.mode || "development",

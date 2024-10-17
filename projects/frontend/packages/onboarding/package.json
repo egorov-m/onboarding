@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "start": "webpack serve --env mode=development --env port=3000",
+        "start": "webpack serve --env mode=development --env port=80",
         "build:dev": "webpack --env mode=development",
         "build:prod": "webpack --env mode=production"
     },

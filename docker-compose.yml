@@ -11,6 +11,43 @@ x-common-security-opt: &common-security-opt
     - no-new-privileges:true
 
 services:
+  onboarding-web-app:
+    build:
+      context: projects/frontend
+      dockerfile: packages/onboarding/docker/Dockerfile
+      target: development  # production - not supported yet
+      args:
+        - BUILDER_BASE_IMAGE=${ONBOARDING_WEB_APP_BUILDER_BASE_IMAGE}
+        - SERVER_BASE_IMAGE=${ONBOARDING_WEB_APP_SERVER_BASE_IMAGE}
+        - REACT_APP_SERVER_PATH_PREFIX=${ONBOARDING_WEB_APP_PATH_PREFIX}
+    container_name: ${PROJECT_NAME}_onboarding-web-app
+    environment:
+      - REACT_APP_SERVER_PATH_PREFIX=${ONBOARDING_WEB_APP_PATH_PREFIX}
+    networks:
+      - onboarding-web-app-proxy
+    depends_on:
+      onboarding-api:
+        condition: service_started
+    restart: unless-stopped
+    profiles:
+      - onboarding
+      - all
+    <<: *common-security-opt
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: "1024m"
+      <<: *common-restart-policy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.onboarding-web-app-rtr.entrypoints=websecure"
+      - "traefik.http.routers.onboarding-web-app-rtr.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`${ONBOARDING_WEB_APP_PATH_PREFIX}`)"
+      - "traefik.http.routers.onboarding-web-app-rtr.tls=true"
+      - "traefik.http.routers.onboarding-web-app-rtr.service=onboarding-web-app-svc"
+      - "traefik.http.services.onboarding-web-app-svc.loadbalancer.server.port=80"
+      - "traefik.http.routers.onboarding-web-app-rtr.middlewares=chain-no-auth@file"
+
   onboarding-api:
     build:
       context: projects/backend
@@ -35,8 +72,6 @@ services:
       - onboarding-db
       - onboarding-api-proxy
     depends_on:
-      traefik:
-        condition: service_healthy
       onboarding-db:
         condition: service_healthy
     restart: unless-stopped
@@ -127,11 +162,14 @@ services:
       - ${DEPLOY_DIR}/projects/3rdparty/traefik3/rules:/rules:ro
       - ${DEPLOY_DIR}/data/logs/traefik:/logs
     networks:
+      - onboarding-web-app-proxy
       - onboarding-api-proxy
       - docker-socket-proxy
       - oauth2-proxy
       - dex-proxy
     depends_on:
+      onboarding-web-app:
+        condition: service_started
       docker-socket-proxy:
         condition: service_started
     healthcheck:
@@ -338,6 +376,7 @@ networks:
   default:
   onboarding-db:
   onboarding-api-proxy:
+  onboarding-web-app-proxy:
   docker-socket-proxy:
   dex-proxy:
   dex:

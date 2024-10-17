@@ -1,11 +1,22 @@
 services:
+  onboarding-web-app:
+    build:
+      target: development
+    environment:
+      - REACT_APP_SERVER_PATH_PREFIX=${ONBOARDING_WEB_APP_PATH_PREFIX}
+    ports:
+      - "8083:80"
+    volumes:
+      - ${DEPLOY_DIR}/projects/frontend/packages/onboarding:/tmp/packages/onboarding
+      - ${DEPLOY_DIR}/projects/frontend/packages/shared:/tmp/packages/shared
+      - ${DEPLOY_DIR}/projects/frontend/lerna.json:/tmp/lerna.json
+      - ${DEPLOY_DIR}/projects/frontend/package.json:/tmp/package.json
+      - ${DEPLOY_DIR}/projects/frontend/package-lock.json:/tmp/package-lock.json
+      - ${DEPLOY_DIR}/projects/frontend/tsconfig.json:/tmp/tsconfig.json
+
   onboarding-api:
     build:
-      context: projects/backend
-      dockerfile: onboarding-api/docker/Dockerfile
       target: development
-      args:
-        - BASE_IMAGE=${ONBOARDING_API_BASE_IMAGE}
     environment:
       - DEBUG=True
     ports:

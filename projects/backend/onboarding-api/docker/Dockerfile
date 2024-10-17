@@ -86,6 +86,8 @@ WORKDIR /usr/onboarding/onboarding-api
 
 COPY --from=builder-prod $PYSETUP_PATH $PYSETUP_PATH
 COPY ./onboarding-api/bin/run.py ./bin/run.py
+COPY ./onboarding-api/alembic ./alembic
+COPY ./onboarding-api/alembic.ini ./alembic.ini
 COPY ./onboarding-api/docker/docker-entrypoint.sh ./docker/docker-entrypoint.sh
 
 EXPOSE 80
