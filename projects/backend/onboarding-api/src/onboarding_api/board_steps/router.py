@@ -7,34 +7,6 @@ from fastapi import APIRouter
 from onboarding_shared.schemas import protocol
 
 
-boards_api = APIRouter()
-
-
-@boards_api.post("/list", status_code=HTTPStatus.OK)
-async def get_boards_info(list_req: protocol.ListRequest) -> protocol.BoardInfoListResponse:
-    return protocol.BoardInfoListResponse()
-
-
-@boards_api.post("/", status_code=HTTPStatus.CREATED)
-async def create_board(create_req: protocol.CreateBoardRequest) -> protocol.BoardInfo:
-    return protocol.BoardInfo()
-
-
-@boards_api.get("/{board_id}", status_code=HTTPStatus.OK)
-async def get_board_info(board_id: UUID) -> protocol.BoardInfo:
-    return protocol.BoardInfo()
-
-
-@boards_api.patch("/{board_id}", status_code=HTTPStatus.OK)
-async def update_board_info(board_id: UUID, update_req: protocol.UpdateBoardInfoRequest) -> protocol.BoardInfo:
-    return protocol.BoardInfo()
-
-
-@boards_api.delete("/{board_id}", status_code=HTTPStatus.NO_CONTENT)
-async def delete_board(board_id: UUID):
-    ...
-
-
 board_steps_api = APIRouter()
 
 
@@ -49,7 +21,6 @@ async def get_steps(
 
 @board_steps_api.post("/", status_code=HTTPStatus.CREATED)
 async def create_step(create_req: protocol.CreateBoardStepRequest) -> protocol.BoardStep:
-    # !!! no positioning capability
     return protocol.BoardStep()
 
 
