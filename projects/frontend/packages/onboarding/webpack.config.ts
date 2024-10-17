@@ -19,7 +19,7 @@ module.exports = (env: EnvVariables) => {
       path: path.resolve(__dirname, "build"),
       filename: "[name].[contenthash].js",
       clean: true,
-      publicPath: "/",
+      publicPath: "",
     },
     module: {
       rules: [

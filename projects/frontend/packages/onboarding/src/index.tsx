@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './app/App';
 import GlobalStyles from 'shared/ui/GlobalStyles';
-import { createHashRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ProjectsPage } from './pages/ProjectsPage/ProjectsPage';
 import { AnalystPage } from './pages/AnalystPage/AnalystPage';
 
-const router = createHashRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
