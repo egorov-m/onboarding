@@ -8,7 +8,7 @@ import { AnalystPage } from './pages/AnalystPage/AnalystPage';
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: `${process.env.REACT_APP_SERVER_PATH_PREFIX}/`,
     element: <App />,
     children: [
       {
@@ -17,11 +17,12 @@ const router = createBrowserRouter([
       },
       {
         path: "analyst",
-        element: <AnalystPage/>
-      }
+        element: <AnalystPage />,
+      },
     ],
   },
 ]);
+
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>

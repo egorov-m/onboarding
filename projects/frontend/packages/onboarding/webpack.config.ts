@@ -12,6 +12,7 @@ interface EnvVariables {
 
 module.exports = (env: EnvVariables) => {
   const isDev = env.mode === "development";
+  const publicPath = process.env.REACT_APP_SERVER_PATH_PREFIX || "";
 
   const config: webpack.Configuration = {
     entry: path.resolve(__dirname, "src", "index.tsx"),
@@ -19,7 +20,7 @@ module.exports = (env: EnvVariables) => {
       path: path.resolve(__dirname, "build"),
       filename: "[name].[contenthash].js",
       clean: true,
-      publicPath: "",
+      publicPath: publicPath,
     },
     module: {
       rules: [
@@ -44,11 +45,12 @@ module.exports = (env: EnvVariables) => {
     plugins: [
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, "public", "index.html"),
+        publicPath
       }),
       new webpack.ProgressPlugin(),
       new webpack.DefinePlugin({
         "process.env.REACT_APP_SERVER_PATH_PREFIX": JSON.stringify(
-          process.env.REACT_APP_SERVER_PATH_PREFIX || "/"
+          process.env.REACT_APP_SERVER_PATH_PREFIX || ""
         ),
       }),
     ],
@@ -56,12 +58,14 @@ module.exports = (env: EnvVariables) => {
     devServer: isDev
       ? {
           port: env.port || 3000,
-          historyApiFallback: true,
+          historyApiFallback: {
+            index: `${publicPath}/index.html`,
+          },
           open: true,
           hot: true,
           static: {
             directory: path.resolve(__dirname, "public"),
-          },
+          }
         }
       : undefined,
     mode: env.mode || "development",
