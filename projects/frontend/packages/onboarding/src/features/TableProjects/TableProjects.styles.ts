@@ -1,11 +1,12 @@
 import styled from 'styled-components';
-import { Colors } from '../../../../shared/constants/Colors';
 
 export const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
   margin: 20px 0;
   font-family: 'Montserrat', sans-serif;
+
+  cursor: pointer;
 
   table-layout: fixed;
 

@@ -3,10 +3,11 @@ import * as styles from './TableProjects.styles';
 import { StarRating } from '../StarRating/StarRating';
 
 interface RowData {
+  id: string;
   name: string;
-  lastEdited: string;
+  updated_at: string;
   status: "Published" | "Saved";
-  rating: number;
+  average_rating: number;
 }
 
 interface TableProjectsProps {
@@ -24,11 +25,11 @@ export const TableProjects: FC<TableProjectsProps> = ({ data }) => (
       </tr>
     </thead>
     <tbody>
-      {data.map((row, index) => (
-        <tr key={index}>
+      {data.map((row) => (
+        <tr key={row.id}>
           <styles.NameColumn>{row.name}</styles.NameColumn>
-          <td>{row.lastEdited}</td>
-          <td><StarRating rating={row.rating} /></td> 
+          <td>{row.updated_at}</td>
+          <td><StarRating rating={row.average_rating} /></td> 
           <td>
             <styles.Status status={row.status}>{row.status}</styles.Status>
           </td>

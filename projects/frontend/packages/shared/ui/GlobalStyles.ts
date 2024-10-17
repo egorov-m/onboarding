@@ -1,4 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
+import { Colors } from '../constants/Colors';
 
 const GlobalStyles = createGlobalStyle`
   *{
@@ -25,6 +26,14 @@ html, body{
   -ms-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
+}
+
+::selection {
+  background-color: ${Colors.Orochimaru};
+}
+
+::-moz-selection {
+  background-color: ${Colors.Orochimaru};
 }
 
 input, button, textarea{font-family: inherit;}

@@ -4,11 +4,13 @@
   "workspaces": [
     "packages/*"
   ],
+  "homepage": "/my-app",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "dotenv": "^16.4.5",
     "lerna": "^8.1.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

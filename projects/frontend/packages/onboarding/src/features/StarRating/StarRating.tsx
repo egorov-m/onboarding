@@ -11,7 +11,7 @@ export const StarRating: React.FC<StarRatingProps> = ({ rating }) => {
   return (
     <styles.StarsContainer>
       {[...Array(totalStars)].map((_, index) => (
-        <styles.Star key={index} filled={index < rating}>&#9733;</styles.Star> // Заполняем звезды в зависимости от рейтинга
+        <styles.Star key={index} filled={index < rating}>&#9733;</styles.Star>
       ))}
     </styles.StarsContainer>
   );
