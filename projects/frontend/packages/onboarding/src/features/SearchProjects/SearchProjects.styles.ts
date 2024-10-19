@@ -8,6 +8,7 @@ export const SearchContainer = styled.div`
 `;
 
 export const SearchInput = styled.input`
+  font-family: 'Montserrat', sans-serif;
   padding: 0.5rem 1rem;
   border: 1px solid ${Colors.Orochimaru};
   border-radius: 4px;

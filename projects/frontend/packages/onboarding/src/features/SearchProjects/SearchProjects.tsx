@@ -1,4 +1,5 @@
 import React, { FC, useState } from "react";
+
 import * as styles from './SearchProjects.styles';
 
 interface SearchProjectsProps {
@@ -15,12 +16,12 @@ export const SearchProjects: FC<SearchProjectsProps> = ({ onSearch }) => {
   
     return (
       <styles.SearchContainer>
-        
+
         <styles.SearchInput
           type="text"
           value={query}
           onChange={handleSearch}
-          placeholder="Search..."
+          placeholder="🔍 Search..."
         />
       </styles.SearchContainer>
     );
