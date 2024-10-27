@@ -5,13 +5,15 @@ from enum import Enum
 
 from pydantic import (
     BaseModel,
-    condecimal,
     conint,
     HttpUrl,
     constr,
 )
 
 from ..exceptions import ApiErrorCode
+
+
+INDEX_BOARD_STEPS_LIMIT = 99
 
 
 class BaseSchema(BaseModel):
@@ -137,15 +139,15 @@ class BoardStep(BaseSchema):
 
 class CreateBoardStepRequest(BaseSchema):
     board_id: UUID
+    type: BoardStepType
     title: constr(min_length=0, max_length=256)
     text: Optional[constr(min_length=0, max_length=4096)] = None
-    index: conint(ge=0, le=100)
+    index: conint(ge=0, le=INDEX_BOARD_STEPS_LIMIT)
 
 
 class UpdateBoardStepRequest(BaseSchema):
     title: Optional[constr(min_length=0, max_length=256)] = None
     text: Optional[constr(min_length=0, max_length=4096)] = None
-    index: Optional[conint(ge=0, le=100)] = None
 
 
 class BoardStepListResponse(_ListResponse):
