@@ -1,6 +1,10 @@
+from collections import namedtuple
 from os import environ
 from json import loads
 from urllib.parse import quote
+
+from .utils import canonical_s3_bucket_name
+
 
 PROJECT_NAME = environ.get("PROJECT_NAME", "Onboarding API")
 PROJECT_DESCRIPTION = environ.get("PROJECT_DESCRIPTION", "External API of onboarding service.")
@@ -37,3 +41,21 @@ DB_URL = (f"postgresql+asyncpg://{DB_USER}:{quote(DB_PASSWORD)}@{DB_HOST}:{DB_PO
           f"min_size={DB_MIN_CONNECTION}&"
           f"max_size={DB_MAX_CONNECTION}&"
           f"timeout={DB_CONNECTION_TIMEOUT}")
+
+S3_HOST = environ.get("S3_HOST", "localhost")
+S3_PORT = int(environ.get("S3_PORT", "9000"))
+S3_ENDPOINT_PATH_PREFIX = environ.get("S3_ENDPOINT_PATH_PREFIX", None)
+S3_URL = f"{S3_HOST}:{S3_PORT}"
+S3_SECURE = loads(environ.get("S3_SECURE", "True").lower())
+S3_CERT_CHECK = loads(environ.get("S3_CERT_CHECK", "True").lower())
+S3_ACCESS_KEY = environ.get("S3_ACCESS_KEY", "user.onboarding")
+S3_SECRET_KEY = environ.get("S3_SECRET_KEY", "secret")
+
+S3_BUCKETS_PREFIX = environ.get("S3_BUCKETS_PREFIX", None)
+S3Buckets = namedtuple("S3Buckets", ("board_images",))
+
+_S3_BOARD_IMAGES_BUCKET = environ.get("S3_BOARD_IMAGES_BUCKET", "images")
+S3_BUCKETS = S3Buckets(
+    canonical_s3_bucket_name(_S3_BOARD_IMAGES_BUCKET, S3_BUCKETS_PREFIX)
+)
+S3_CLIENT_DISABLE_INITIALIZATION = loads(environ.get("S3_CLIENT_DISABLE_INITIALIZATION", "False").lower())
