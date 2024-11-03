@@ -26,6 +26,8 @@ services:
     networks:
       - onboarding-web-app-proxy
     depends_on:
+      traefik:
+        condition: service_healthy
       onboarding-api:
         condition: service_started
     restart: unless-stopped
@@ -37,7 +39,7 @@ services:
       resources:
         limits:
           cpus: "1"
-          memory: "1024m"
+          memory: "1G"
       <<: *common-restart-policy
     labels:
       - "traefik.enable=true"
@@ -46,7 +48,7 @@ services:
       - "traefik.http.routers.onboarding-web-app-rtr.tls=true"
       - "traefik.http.routers.onboarding-web-app-rtr.service=onboarding-web-app-svc"
       - "traefik.http.services.onboarding-web-app-svc.loadbalancer.server.port=80"
-      - "traefik.http.routers.onboarding-web-app-rtr.middlewares=chain-no-auth@file"
+      - "traefik.http.routers.onboarding-web-app-rtr.middlewares=chain-oauth@file"
 
   onboarding-api:
     build:
@@ -68,12 +70,24 @@ services:
       - DB_NAME=${ONBOARDING_DB_NAME}
       - DB_USER=${ONBOARDING_DB_USER}
       - DB_PASSWORD=${ONBOARDING_DB_PASSWORD}
+      - S3_HOST=${S3_HOST}
+      - S3_PORT=${S3_PORT}
+      - S3_SECURE=${S3_SECURE}
+      - S3_CERT_CHECK=${S3_CERT_CHECK}
+      - S3_ACCESS_KEY=${S3_ROOT_USER}
+      - S3_SECRET_KEY=${S3_ROOT_PASSWORD}
+      - S3_BUCKETS_PREFIX=${S3_BUCKETS_PREFIX}
     networks:
       - onboarding-db
+#      - onboarding-minio
       - onboarding-api-proxy
     depends_on:
+      traefik:
+        condition: service_healthy
       onboarding-db:
         condition: service_healthy
+#      minio:
+#        condition: service_healthy
     restart: unless-stopped
     profiles:
       - onboarding
@@ -83,7 +97,7 @@ services:
       resources:
         limits:
           cpus: "1"
-          memory: "512m"
+          memory: "1G"
       <<: *common-restart-policy
     labels:
       - "traefik.enable=true"
@@ -119,6 +133,51 @@ services:
           cpus: "0.5"
           memory: "512m"
       <<: *common-restart-policy
+
+# difficulties with output behind proxy, can't use prefix path
+#  minio:
+#    image: ${MINIO_IMAGE}
+#    container_name: ${PROJECT_NAME}_minio
+#    environment:
+#      - MINIO_ROOT_USER=${S3_ROOT_USER}
+#      - MINIO_ROOT_PASSWORD=${S3_ROOT_PASSWORD}
+#      - MINIO_BROWSER=off
+#      - MINIO_SERVER_URL=https://${DOMAIN_NAME}
+#    networks:
+#      - minio-proxy
+#      - onboarding-minio
+#    depends_on:
+#      traefik:
+#        condition: service_healthy
+#    command:
+#      - server
+#      - /data
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+#      interval: 30s
+#      timeout: 20s
+#      retries: 3
+#    restart: unless-stopped
+#    profiles:
+#      - infra
+#      - all
+#    <<: *common-security-opt
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "1"
+#          memory: "1G"
+#      <<: *common-restart-policy
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.minio-rtr.entrypoints=websecure"
+#      - "traefik.http.routers.minio-rtr.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`${S3_PATH_PREFIX}`)"
+#      - "traefik.http.middlewares.s3-stripprefix.stripprefix.prefixes=${S3_PATH_PREFIX}"
+#      - "traefik.http.routers.minio-rtr.middlewares=s3-stripprefix"
+#      - "traefik.http.routers.minio-rtr.tls=true"
+#      - "traefik.http.routers.minio-rtr.service=minio-svc"
+#      - "traefik.http.services.minio-svc.loadbalancer.server.port=9000"
+##      - "traefik.http.routers.minio-rtr.middlewares=chain-no-auth@file"
 
   docker-socket-proxy:
     image: ${DOCKER_SOCKET_PROXY_IMAGE}
@@ -166,10 +225,9 @@ services:
       - onboarding-api-proxy
       - docker-socket-proxy
       - oauth2-proxy
+#      - minio-proxy
       - dex-proxy
     depends_on:
-      onboarding-web-app:
-        condition: service_started
       docker-socket-proxy:
         condition: service_started
     healthcheck:
@@ -216,6 +274,8 @@ services:
     image: ${OAUTH2_PROXY_IMAGE}
     container_name: ${PROJECT_NAME}_oauth2-proxy
     depends_on:
+      traefik:
+        condition: service_healthy
       dex:
         condition: service_started
     restart: unless-stopped
@@ -375,9 +435,11 @@ services:
 networks:
   default:
   onboarding-db:
+#  onboarding-minio:
   onboarding-api-proxy:
   onboarding-web-app-proxy:
   docker-socket-proxy:
+#  minio-proxy:
   dex-proxy:
   dex:
   oauth2:

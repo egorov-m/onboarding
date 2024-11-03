@@ -29,3 +29,7 @@ services:
   onboarding-db:
     ports:
       - "5551:5432"
+
+#  minio:
+#    ports:
+#      - "9900:9000"

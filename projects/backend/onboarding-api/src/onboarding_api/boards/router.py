@@ -17,7 +17,6 @@ async def get_boards_info(
         list_req: protocol.ListRequest,
         user: AuthUserData = Depends(get_auth_user()),
 ) -> protocol.BoardInfoListResponse:
-    # TODO: implement getting via the cursor
     return await BoardsApiService.get_boards_info(user.id)
 
 
