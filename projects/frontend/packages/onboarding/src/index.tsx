@@ -1,10 +1,11 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './app/App';
-import GlobalStyles from 'shared/ui/GlobalStyles';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { ProjectsPage } from './pages/ProjectsPage/ProjectsPage';
-import { AnalystPage } from './pages/AnalystPage/AnalystPage';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./app/App";
+import GlobalStyles from "shared/ui/GlobalStyles";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ProjectsPage } from "./pages/ProjectsPage/ProjectsPage";
+import { AnalystPage } from "./pages/AnalystPage/AnalystPage";
+import { ConstructorPage } from "./pages/ConstructorPage/ConstructorPage";
 
 const router = createBrowserRouter([
   {
@@ -19,11 +20,17 @@ const router = createBrowserRouter([
         path: "analyst",
         element: <AnalystPage />,
       },
+      {
+        path: "constructor",
+        element: <ConstructorPage />,
+      },
     ],
   },
 ]);
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
 root.render(
   <React.StrictMode>
     <GlobalStyles />
