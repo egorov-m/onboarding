@@ -37,6 +37,19 @@ module.exports = (env: EnvVariables) => {
           test: /\.(png|jpe?g|gif|svg)$/,
           type: "asset/resource",
         },
+        {
+          test: /node_modules[\/\\]@?reactflow[\/\\].*.js$/,
+          use: {
+            loader: "babel-loader",
+            options: {
+              presets: ["@babel/preset-env", "@babel/preset-react"],
+              plugins: [
+                "@babel/plugin-proposal-optional-chaining",
+                "@babel/plugin-proposal-nullish-coalescing-operator",
+              ],
+            },
+          },
+        },
       ],
     },
     resolve: {
@@ -45,7 +58,7 @@ module.exports = (env: EnvVariables) => {
     plugins: [
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, "public", "index.html"),
-        publicPath
+        publicPath,
       }),
       new webpack.ProgressPlugin(),
       new webpack.DefinePlugin({
@@ -66,7 +79,7 @@ module.exports = (env: EnvVariables) => {
           static: {
             directory: path.resolve(__dirname, "public"),
           },
-          allowedHosts: "all"
+          allowedHosts: "all",
         }
       : undefined,
     mode: env.mode || "development",
