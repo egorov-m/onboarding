@@ -9,6 +9,9 @@ class ApiErrorCode(int, Enum):
 
     BOARD_NOT_FOUND = 1004
 
+    BOARD_STEP_NOT_SPECIFIED = 2000
+    BOARD_STEP_NOT_FOUND = 2004
+
 
 class ApiException(Exception):
     message: Optional[str] = None
