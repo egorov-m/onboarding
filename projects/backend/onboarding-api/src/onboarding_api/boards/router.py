@@ -1,7 +1,7 @@
 from uuid import UUID
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,BackgroundTasks
 
 from onboarding_shared.schemas import protocol
 
@@ -43,5 +43,9 @@ async def update_board_info(
 
 
 @boards_api.delete("/{board_id}", status_code=HTTPStatus.NO_CONTENT)
-async def delete_board(board_id: UUID, user: AuthUserData = Depends(get_auth_user())):
-    await BoardsApiService.delete_board(str(board_id), user.id)
+async def delete_board(
+        board_id: UUID,
+        background_tasks: BackgroundTasks,
+        user: AuthUserData = Depends(get_auth_user()),
+):
+    await BoardsApiService.delete_board(str(board_id), user.id, background_tasks)

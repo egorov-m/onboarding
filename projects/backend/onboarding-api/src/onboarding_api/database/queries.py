@@ -1,8 +1,8 @@
-from typing import Optional
+from typing import Optional, Iterable
 
-from sqlalchemy import Select, Insert, Update, Delete, func, select
+from sqlalchemy import Select, Insert, Update, Delete, func, select, join
 
-from onboarding_api.database.tables import user_table, board_table, board_step_table
+from onboarding_api.database.tables import user_table, board_table, board_step_table, blob_table, board_step_blob_table
 
 
 def get_user_by_email_query(email: str) -> Select:
@@ -179,3 +179,92 @@ def delete_board_step_query(board_step_id: str) -> Delete:
 
 def delete_board_steps_query(board_id: str) -> Delete:
     return board_step_table.delete().where(board_step_table.c.board_id == board_id)
+
+
+def create_blob_query(
+        _id: str,
+        *,
+        type: int,
+        s3_link: Optional[str] = None,
+) -> Insert:
+    return blob_table.insert().values({
+        "id": _id,
+        "type": type,
+        "s3_link": s3_link
+    }).returning(blob_table)
+
+
+def attach_blob_board_step_query(board_step_id: str, blob_id: str) -> Insert:
+    return board_step_blob_table.insert().values({
+        "board_step_id": board_step_id,
+        "blob_id": blob_id
+    })
+
+
+def detach_blob_board_step_query(board_step_id: str, blob_id: str) -> Delete:
+    return board_step_blob_table.delete().where(
+        board_step_blob_table.c.board_step_id == board_step_id,
+        board_step_blob_table.c.blob_id == blob_id
+    )
+
+
+def detach_blob_by_id_board_step_query(blob_id: str) -> Delete:
+    return board_step_blob_table.delete().where(
+        board_step_blob_table.c.blob_id == blob_id
+    )
+
+
+def delete_blobs_board_step_query(blob_ids: Iterable) -> Delete:
+    return blob_table.delete().where(
+        blob_table.c.id.in_(blob_ids)
+    )
+
+
+def detach_all_blobs_for_board_step_query(board_step_id: str) -> Delete:
+    return board_step_blob_table.delete().where(
+        board_step_blob_table.c.board_step_id == board_step_id,
+    )
+
+
+def count_attached_blob_board_step_query(board_step_id: str) -> Select:
+    return select(func.count()).select_from(board_step_blob_table).where(
+        board_step_blob_table.c.board_step_id == board_step_id
+    )
+
+
+def get_attached_blob_board_step_query(board_step_id: str, blob_id: str) -> Select:
+    return board_step_blob_table.select().where(
+        board_step_blob_table.c.board_step_id == board_step_id,
+        board_step_blob_table.c.blob_id == blob_id,
+    )
+
+
+def get_list_blobs_query(board_step_id: str) -> Select:
+    return select(blob_table).select_from(
+        join(
+            board_step_blob_table, blob_table, board_step_blob_table.c.blob_id == blob_table.c.id
+        )
+    ).where(board_step_blob_table.c.board_step_id == board_step_id)
+
+
+def get_blob_by_id_query(blob_id: str) -> Select:
+    return blob_table.select().where(blob_table.c.id == blob_id)
+
+
+def delete_blob_query(blob_id: str) -> Delete:
+    return blob_table.delete().where(blob_table.c.id == blob_id)
+
+
+def update_blob_query(
+        blob_id: str,
+        *,
+        type: Optional[int] = None,
+        s3_link: Optional[str] = None,
+) -> Update:
+    values = {}
+    if type is not None:
+        values["type"] = type
+    if s3_link is not None:
+        values["s3_link"] = s3_link
+
+    return blob_table.update().values(values).where(blob_table.c.id == blob_id).returning(blob_table)

@@ -105,7 +105,7 @@ class BlobType(str, Enum):
 class Blob(BaseSchema):
     id: UUID
     type: BlobType
-    link: HttpUrl
+    link: Optional[HttpUrl] = None
     created_at: datetime
     updated_at: datetime
 
