@@ -11,6 +11,9 @@ class ApiErrorCode(int, Enum):
 
     BOARD_STEP_NOT_SPECIFIED = 2000
     BOARD_STEP_NOT_FOUND = 2004
+    BOARD_STEP_ALREADY_HAS_MAX_COUNT_ATTACHED_BLOB = 2010
+
+    BLOB_NOT_FOUND = 3004
 
 
 class ApiException(Exception):
