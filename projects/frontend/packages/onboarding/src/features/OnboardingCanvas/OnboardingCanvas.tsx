@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import ReactFlow, {
   addEdge,
   applyEdgeChanges,
@@ -17,12 +17,14 @@ import ReactFlow, {
 
 import * as styles from "./OnboardingCanvas.styles";
 import { CustomNode } from "./CustomNode/CustomNode";
-
 import { Modal } from "./Modal/Modal";
+import axios from "axios";
+
+import { v4 as uuidv4 } from "uuid";
 
 const initialNodes: Node[] = [
   {
-    id: "1",
+    id: uuidv4(),
     data: { label: "1 этап" },
     position: { x: 100, y: 100 },
     type: "customNode",
@@ -32,11 +34,23 @@ const initialNodes: Node[] = [
   },
 ];
 
+interface Step {
+  id: string;
+  title: string;
+  text: string;
+}
+
 const nodeTypes = {
   customNode: CustomNode,
 };
 
-export const OnboardingCanvas = () => {
+interface OnboardingCanvasProps {
+  boardId: string;
+}
+
+export const OnboardingCanvas: React.FC<OnboardingCanvasProps> = ({
+  boardId,
+}) => {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -44,34 +58,82 @@ export const OnboardingCanvas = () => {
   const [nodeText, setNodeText] = useState<string>("");
   const [nodeImage, setNodeImage] = useState<File | null>(null);
 
-  const addStep = (sourceId: string) => {
-    const currentStepIndex = parseInt(sourceId) - 1;
-    const nextStepId = (currentStepIndex + 2).toString();
+  useEffect(() => {
+    const fetchSteps = async () => {
+      try {
+        const response = await axios.post(
+          `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/list/${boardId}`,
+          {}
+        );
 
-    if (nodes.some((node) => node.id === nextStepId)) {
-      console.warn(`Этап ${nextStepId} уже существует`);
-      return;
+        let steps = response.data.items.map((step: Step) => ({
+          id: step.id,
+          data: { label: step.title, text: step.text },
+          position: { x: 100, y: 100 },
+          type: "customNode",
+          sourcePosition: Position.Right,
+          targetPosition: Position.Left,
+          draggable: true,
+        }));
+
+        if (steps.length === 0) {
+          steps = initialNodes;
+        }
+
+        console.log("Loaded steps:", steps);
+        setNodes(steps);
+      } catch (error) {
+        console.error("Error fetching steps:", error);
+      }
+    };
+
+    fetchSteps();
+  }, [boardId]);
+
+  const addStep = async (sourceId: string) => {
+    try {
+      const response = await axios.post(
+        "https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/",
+        {
+          board_id: boardId,
+          type: "basic",
+          title: `${nodes.length + 1} этап`,
+          text: "",
+          index: nodes.length + 1,
+        }
+      );
+
+      const newNodeId = response.data.id || uuidv4();
+
+      const newNode: Node = {
+        id: newNodeId,
+        data: { label: `${nodes.length + 1} этап` },
+        position: { x: 100 + nodes.length * 30, y: 100 + nodes.length * 30 },
+        type: "customNode",
+        sourcePosition: Position.Right,
+        targetPosition: Position.Left,
+        draggable: true,
+      };
+
+      setNodes((prevNodes) => [...prevNodes, newNode]);
+      setEdges((prevEdges) =>
+        addEdge(
+          {
+            id: `e${sourceId}-${newNodeId}`,
+            source: sourceId,
+            target: newNodeId,
+            animated: true,
+          },
+          prevEdges
+        )
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error details:", error.response?.data || error.message);
+      } else {
+        console.error("Error creating new step:", error);
+      }
     }
-
-    const newNode: Node = {
-      id: nextStepId,
-      data: { label: `${nextStepId} этап` },
-      position: { x: 100 + nodes.length * 30, y: 100 + nodes.length * 30 },
-      type: "customNode",
-      sourcePosition: Position.Right,
-      targetPosition: Position.Left,
-      draggable: true,
-    };
-
-    setNodes((nds) => [...nds, newNode]);
-
-    const newEdge: Edge = {
-      id: `e${sourceId}-${nextStepId}`,
-      source: sourceId,
-      target: nextStepId,
-      animated: true,
-    };
-    setEdges((eds) => addEdge(newEdge, eds));
   };
 
   const onNodesChange = useCallback(
@@ -87,29 +149,19 @@ export const OnboardingCanvas = () => {
   );
 
   const onConnect: OnConnect = useCallback((params: Connection) => {
-    const source = params.source;
-    const target = params.target;
+    const { source, target } = params;
 
-    if (source && target) {
-      if (parseInt(source) + 1 === parseInt(target)) {
-        const newEdge: Edge = {
-          id: `e${source}-${target}`,
-          source,
-          target,
-          animated: true,
-        };
-        console.log(
-          `Создание соединения: ${newEdge.id} от ${source} к ${target}`
-        );
-        setEdges((eds) => addEdge(newEdge, eds));
-      } else {
-        console.warn(
-          `Некорректное соединение: ${source} не может соединяться с ${target}`
-        );
-      }
+    if (source && target && parseInt(source) + 1 === parseInt(target)) {
+      const newEdge: Edge = {
+        id: `e${source}-${target}`,
+        source,
+        target,
+        animated: true,
+      };
+      setEdges((eds) => addEdge(newEdge, eds));
     } else {
       console.warn(
-        `Не удалось создать соединение: source=${source}, target=${target}`
+        `Некорректное соединение: ${source} не может соединяться с ${target}`
       );
     }
   }, []);
@@ -131,18 +183,53 @@ export const OnboardingCanvas = () => {
     setNodeImage(null);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (currentNodeId) {
-      const updatedNodes = nodes.map((node) =>
-        node.id === currentNodeId
-          ? {
-              ...node,
-              data: { ...node.data, text: nodeText, image: nodeImage },
-            }
-          : node
-      );
-      setNodes(updatedNodes);
-      closeModal();
+      try {
+        const title =
+          nodes.find((node) => node.id === currentNodeId)?.data.label || "";
+        const text = nodeText || "";
+
+        if (!title.trim() || !text.trim()) {
+          console.error("Title or text is missing or empty.");
+          return;
+        }
+
+        await axios.patch(
+          `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${currentNodeId}`,
+          { title, text },
+          { params: { is_include_blobs: true } }
+        );
+
+        if (nodeImage) {
+          const formData = new FormData();
+          formData.append("file", nodeImage);
+
+          await axios.post(
+            `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${currentNodeId}/blob`,
+            formData,
+            { params: { blob_type: "image" } }
+          );
+        }
+
+        setNodes(
+          nodes.map((node) =>
+            node.id === currentNodeId
+              ? {
+                  ...node,
+                  data: { ...node.data, text: nodeText, image: nodeImage },
+                }
+              : node
+          )
+        );
+        closeModal();
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+          console.error("Error details:", error.response.data);
+        } else {
+          console.error("Error updating step:", error);
+        }
+      }
     }
   };
 
@@ -163,7 +250,6 @@ export const OnboardingCanvas = () => {
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         fitView
-        proOptions={{ hideAttribution: true, account: "" }}
       >
         <MiniMap />
         <Controls />

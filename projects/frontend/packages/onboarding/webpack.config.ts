@@ -2,6 +2,10 @@ import path from "path";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import webpack from "webpack";
 import "webpack-dev-server";
+import {
+  Configuration as DevServerConfiguration,
+  ProxyConfigArrayItem,
+} from "webpack-dev-server";
 
 type Mode = "development" | "production";
 
@@ -9,6 +13,20 @@ interface EnvVariables {
   mode: Mode;
   port?: number;
 }
+
+const proxyConfig: ProxyConfigArrayItem[] = [
+  {
+    context: ["/api"],
+    target: "https://cobra-fancy-officially.ngrok-free.app",
+    secure: false,
+    changeOrigin: true,
+    pathRewrite: { "^/api": "" },
+    headers: {
+      "ngrok-skip-browser-warning": "true",
+    },
+    logLevel: "debug",
+  },
+];
 
 module.exports = (env: EnvVariables) => {
   const isDev = env.mode === "development";
@@ -80,6 +98,12 @@ module.exports = (env: EnvVariables) => {
             directory: path.resolve(__dirname, "public"),
           },
           allowedHosts: "all",
+          proxy: proxyConfig,
+          client: {
+            webSocketURL: {
+              pathname: "/ws",
+            },
+          },
         }
       : undefined,
     mode: env.mode || "development",

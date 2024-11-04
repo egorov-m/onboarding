@@ -21,7 +21,7 @@ const router = createBrowserRouter([
         element: <AnalystPage />,
       },
       {
-        path: "constructor",
+        path: "constructor/:projectId",
         element: <ConstructorPage />,
       },
     ],
