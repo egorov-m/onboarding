@@ -3,8 +3,11 @@ import { Handle, Position } from "react-flow-renderer";
 
 interface CustomNodeData {
   label: string;
+  id: string;
   onAddStep: (id: string) => void;
   onClick: () => void;
+  board_step_id?: string;
+  blob_id?: string;
 }
 
 export const CustomNode: React.FC<{ data: CustomNodeData }> = ({ data }) => {
@@ -27,7 +30,7 @@ export const CustomNode: React.FC<{ data: CustomNodeData }> = ({ data }) => {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            data.onAddStep(data.label.split(" ")[0]);
+            data.onAddStep(data.id);
           }}
         >
           +

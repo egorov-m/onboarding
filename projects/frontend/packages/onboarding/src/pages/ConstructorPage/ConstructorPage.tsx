@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useLocation, useParams } from "react-router";
 import { Container } from "../../../../shared/ui/layout/Container";
 import { OnboardingCanvas } from "../../features/OnboardingCanvas/OnboardingCanvas";
 import { StatusButton } from "../../features/StatusButton/StatusButton";
 import { SaveButton } from "../../features/SaveButton/SaveButton";
 import * as styles from "./ConstructorPage.styles";
+
+interface LocationState {
+  name: string;
+  status: "published" | "unpublished";
+}
 
 interface LocationState {
   name: string;
@@ -22,10 +27,16 @@ export const ConstructorPage = () => {
     initialStatus
   );
 
+  const canvasRef = useRef<{ saveCanvas: () => void } | null>(null);
+
   const toggleStatus = () => {
     setStatus((prevStatus) =>
       prevStatus === "published" ? "unpublished" : "published"
     );
+  };
+
+  const handleSave = () => {
+    canvasRef.current?.saveCanvas();
   };
 
   return (
@@ -35,8 +46,8 @@ export const ConstructorPage = () => {
           <styles.Title>{name}</styles.Title>
           <StatusButton status={status} onToggle={toggleStatus} />
         </styles.Header>
-        <OnboardingCanvas boardId={projectId!} />
-        <SaveButton />
+        <OnboardingCanvas ref={canvasRef} boardId={projectId!} />
+        <SaveButton onClick={handleSave} />
       </Container>
     </styles.PageWrapper>
   );
