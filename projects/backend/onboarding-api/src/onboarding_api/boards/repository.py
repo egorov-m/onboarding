@@ -1,9 +1,9 @@
 from typing import AsyncGenerator, Optional
 
 from onboarding_shared.schemas import protocol
+from onboarding_shared import utils
 
 from ..database import database, queries
-from ..utils import generate_id, int_from_enum
 
 
 class BoardRepository:
@@ -17,11 +17,11 @@ class BoardRepository:
 
     @classmethod
     async def create_board(cls, board_name: str, owner_id: str):
-        board_id = generate_id()
+        board_id = utils.generate_id()
         create_query = queries.create_board_query(
             board_id,
             name=board_name,
-            status=int_from_enum(protocol.BoardStatus.unpublished),
+            status=utils.int_from_enum(protocol.BoardStatus.unpublished),
             owner_id=owner_id,
         )
         board_record = await database.fetch_one(query=create_query)
@@ -43,7 +43,7 @@ class BoardRepository:
             board_name: Optional[str] = None,
             board_status: Optional[protocol.BoardStatus] = None,
     ):
-        status = int_from_enum(board_status) if board_status is not None else None
+        status = utils.int_from_enum(board_status) if board_status is not None else None
         update_query = queries.update_board_query(
             board_id,
             owner_id,

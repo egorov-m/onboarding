@@ -1,19 +1,19 @@
 from typing import Optional, AsyncGenerator
 
 from onboarding_shared.schemas import protocol
+from onboarding_shared import utils
 
 from ..config import S3_BUCKETS
 from ..database import database, queries
-from ..utils import generate_id, canonical_s3_link, get_bucket_name, int_from_enum
 
 
 class BlobRepository:
 
     @classmethod
     async def create_blob(cls, board_step_id: str, type: protocol.BlobType):
-        blob_id = generate_id()
-        bucket_name = get_bucket_name(type, S3_BUCKETS)
-        s3_link = canonical_s3_link(
+        blob_id = utils.generate_id()
+        bucket_name = utils.get_bucket_name(type, S3_BUCKETS)
+        s3_link = utils.canonical_s3_link(
             bucket_name=bucket_name,
             step_id=board_step_id,
             blob_id=blob_id,
@@ -21,7 +21,7 @@ class BlobRepository:
         )
         create_query = queries.create_blob_query(
             blob_id,
-            type=int_from_enum(type),
+            type=utils.int_from_enum(type),
             s3_link=s3_link,
         )
         blob_record = await database.fetch_one(query=create_query)

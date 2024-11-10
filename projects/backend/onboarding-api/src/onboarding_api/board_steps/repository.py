@@ -1,9 +1,9 @@
 from typing import AsyncGenerator, Optional
 
 from onboarding_shared.schemas import protocol
+from onboarding_shared import utils
 
 from ..database import database, queries
-from ..utils import generate_id, int_from_enum
 
 
 class BoardStepsRepository:
@@ -69,10 +69,10 @@ class BoardStepsRepository:
             index: int,
             board_id: str,
     ):
-        step_id = generate_id()
+        step_id = utils.generate_id()
         create_query = queries.create_board_step_query(
             step_id,
-            type=int_from_enum(type),
+            type=utils.int_from_enum(type),
             title=title,
             text=text,
             index=index,
