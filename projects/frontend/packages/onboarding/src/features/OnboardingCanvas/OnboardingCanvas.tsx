@@ -21,12 +21,14 @@ import ReactFlow, {
   Position,
 } from "react-flow-renderer";
 
+import { AxiosError } from "axios";
+
 import * as styles from "./OnboardingCanvas.styles";
 import { CustomNode } from "./CustomNode/CustomNode";
-import { Modal } from "./Modal/Modal";
 import axios from "axios";
 
 import { v4 as uuidv4 } from "uuid";
+import { Modal } from "shared/ui/components/Modal/Modal";
 
 interface Step {
   id: string;
@@ -71,6 +73,205 @@ export const OnboardingCanvas = forwardRef(
       else fetchSteps();
     }, [boardId]);
 
+    const uploadImage = async (file: File, boardStepId: string) => {
+      console.log("uploadImage: Начало загрузки изображения.");
+      console.log("uploadImage: file:", file);
+      console.log("uploadImage: boardStepId:", boardStepId);
+
+      const blobData = await createBlob(boardStepId);
+      console.log("uploadImage: Данные Blob после создания:", blobData);
+
+      if (!blobData) {
+        console.error("uploadImage: Blob не был создан.");
+        return null;
+      }
+
+      const { blobId, actionLink } = blobData;
+
+      await uploadImageToPresignedUrl(actionLink, file);
+
+      await linkBlobToStep(boardStepId, blobId);
+
+      console.log("uploadImage: Изображение успешно загружено и привязано!");
+      return blobId;
+    };
+
+    const uploadImageToPresignedUrl = async (
+      actionLink: string,
+      file: File
+    ) => {
+      try {
+        console.log("uploadImageToPresignedUrl: Начало загрузки файла.");
+        console.log("uploadImageToPresignedUrl: URL для загрузки:", actionLink);
+        console.log("uploadImageToPresignedUrl: Файл:", file);
+
+        await axios.put(actionLink, file, {
+          headers: { "Content-Type": file.type },
+        });
+
+        console.log(
+          "uploadImageToPresignedUrl: Изображение успешно загружено!"
+        );
+      } catch (error) {
+        console.error(
+          "uploadImageToPresignedUrl: Ошибка при загрузке изображения:",
+          error
+        );
+      }
+    };
+
+    const getBlobPresignedUrl = async (boardStepId: string, blobId: string) => {
+      try {
+        console.log(
+          `Получение предподписанной ссылки для boardStepId: ${boardStepId}, blobId: ${blobId}`
+        );
+        const response = await axios.get(
+          `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${boardStepId}/blob/${blobId}`,
+          {
+            params: { is_include_link: true },
+          }
+        );
+        console.log("Предподписанная ссылка:", response.data.link);
+        console.log("Полный ответ от сервера:", response.data);
+
+        return response.data.link;
+      } catch (error) {
+        const err = error as AxiosError;
+
+        console.error(
+          "Ошибка при получении предподписанной ссылки:",
+          err.response?.data || error
+        );
+        return null;
+      }
+    };
+
+    const linkBlobToStep = async (boardStepId: string, blobId: string) => {
+      try {
+        console.log("linkBlobToStep: Начало привязки Blob.");
+        console.log("linkBlobToStep: boardStepId:", boardStepId);
+        console.log("linkBlobToStep: blobId:", blobId);
+
+        await axios.patch(
+          `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${boardStepId}/blob/${blobId}`
+        );
+
+        console.log("linkBlobToStep: Blob успешно привязан!");
+      } catch (error) {
+        console.error(
+          "linkBlobToStep: Ошибка при привязке blob к шагу:",
+          error
+        );
+      }
+    };
+
+    const getBlobList = async (boardStepId: string) => {
+      try {
+        console.log(`Получение списка Blob'ов для boardStepId: ${boardStepId}`);
+        const response = await axios.post(
+          `/api/onboarding/board_steps/${boardStepId}/blob/list`,
+          {}
+        );
+        console.log("Ответ от сервера (Blob list):", response.data);
+        return response.data.items || [];
+      } catch (error) {
+        const err = error as AxiosError;
+
+        console.error(
+          "Ошибка при получении списка blob'ов:",
+          err.response?.data || error
+        );
+        throw error;
+      }
+    };
+
+    const createBlob = async (
+      boardStepId: string
+    ): Promise<{ blobId: string; actionLink: string } | null> => {
+      try {
+        console.log(
+          "createBlob: Начало создания Blob для boardStepId:",
+          boardStepId
+        );
+
+        const response = await axios.post(
+          `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${boardStepId}/blob`,
+          null,
+          { params: { blob_type: "image" } }
+        );
+
+        console.log("createBlob: Ответ от API:", response.data);
+
+        const { blob_id, action_link } = response.data;
+
+        if (!blob_id || !action_link) {
+          console.error(
+            "createBlob: blob_id или action_link отсутствуют в ответе."
+          );
+          return null;
+        }
+
+        return { blobId: blob_id, actionLink: action_link };
+      } catch (error) {
+        console.error("createBlob: Ошибка при создании blob:", error);
+        return null;
+      }
+    };
+
+    const updateBlob = async (
+      boardStepId: string,
+      blobId: string,
+      file: File
+    ): Promise<void> => {
+      console.log("updateBlob: Начало процесса обновления Blob.");
+
+      try {
+        console.log(
+          "updateBlob: Отправка PATCH запроса для получения предподписанной ссылки..."
+        );
+
+        const response = await axios.patch(
+          `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${boardStepId}/blob/${blobId}`,
+          null
+        );
+
+        console.log("updateBlob: Ответ от сервера:", response.data);
+
+        // Используем поле action_link вместо presignedUrl
+        const actionLink = response.data?.action_link;
+        if (!actionLink) {
+          console.error(
+            "updateBlob: action_link отсутствует в ответе сервера."
+          );
+          console.error("Полный ответ от сервера:", response.data);
+          throw new Error("action_link отсутствует в ответе сервера.");
+        }
+
+        console.log("updateBlob: action_link успешно получен:", actionLink);
+
+        // Загрузка файла на action_link
+        console.log("updateBlob: Загрузка файла на action_link...");
+        await axios.put(actionLink, file, {
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+
+        console.log("updateBlob: Файл успешно загружен!");
+      } catch (error) {
+        console.error("updateBlob: Ошибка при обновлении Blob:", error);
+
+        if (axios.isAxiosError(error)) {
+          console.error(
+            "updateBlob: Ошибка Axios:",
+            error.response?.data || error.message
+          );
+        }
+
+        throw error;
+      }
+    };
+
     const fetchSteps = async () => {
       try {
         const response = await axios.post(
@@ -99,6 +300,25 @@ export const OnboardingCanvas = forwardRef(
         console.log("Canvas saved locally");
       },
     }));
+
+    const deleteStep = async (nodeId: string) => {
+      try {
+        await axios.delete(
+          `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${nodeId}`
+        );
+
+        setNodes((prevNodes) => prevNodes.filter((node) => node.id !== nodeId));
+        setEdges((prevEdges) =>
+          prevEdges.filter(
+            (edge) => edge.source !== nodeId && edge.target !== nodeId
+          )
+        );
+
+        console.log(`Этап ${nodeId} успешно удалён.`);
+      } catch (error) {
+        console.error("Ошибка при удалении этапа:", error);
+      }
+    };
 
     const addStep = async () => {
       try {
@@ -178,36 +398,35 @@ export const OnboardingCanvas = forwardRef(
 
     const openModal = async (nodeId: string) => {
       const currentNode = nodes.find((node) => node.id === nodeId);
-      if (currentNode) {
-        setNodeText(currentNode.data.text || "");
-        setCurrentNodeId(nodeId);
-        setModalIsOpen(true);
+      if (!currentNode) {
+        console.error(`Узел с id ${nodeId} не найден.`);
+        return;
+      }
 
-        try {
-          const response = await axios.post(
-            `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${nodeId}/blob`,
-            {},
-            { responseType: "blob" }
-          );
-          const imageBlob = response.data;
-          const imageUrl = URL.createObjectURL(imageBlob);
-          setNodeImageUrl(imageUrl);
+      setNodeText(currentNode.data.text || "");
+      setCurrentNodeId(nodeId);
+      setModalIsOpen(true);
 
-          const actionLink = currentNode.data.action_link;
-
-          const formData = new FormData();
-          formData.append("file", imageBlob, "image.png");
-
-          await axios.put(actionLink, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-
-          console.log("Изображение успешно загружено!");
-        } catch (error) {
-          console.error("Ошибка при загрузке изображения:", error);
+      try {
+        const blobs = await getBlobList(nodeId);
+        if (!blobs || blobs.length === 0) {
+          console.warn("У этапа нет связанных Blob'ов.");
+          return;
         }
+
+        const blobId = blobs[0].id;
+        const imageUrl = await getBlobPresignedUrl(nodeId, blobId);
+        setNodeImageUrl(imageUrl);
+
+        setNodes((prevNodes) =>
+          prevNodes.map((node) =>
+            node.id === nodeId
+              ? { ...node, data: { ...node.data, blob_id: blobId } }
+              : node
+          )
+        );
+      } catch (error) {
+        console.error("Ошибка при загрузке изображения:", error);
       }
     };
 
@@ -226,49 +445,62 @@ export const OnboardingCanvas = forwardRef(
     const handleSave = async () => {
       if (currentNodeId) {
         try {
+          console.log(
+            `handleSave: Сохранение этапа. currentNodeId: ${currentNodeId}`
+          );
+
           const title =
             nodes.find((node) => node.id === currentNodeId)?.data.label || "";
           const text = nodeText || "";
 
-          if (!title.trim() || !text.trim()) {
-            console.error("Title or text is missing or empty.");
-            return;
+          console.log("handleSave: Данные для сохранения:", { title, text });
+
+          let blob_id =
+            nodes.find((node) => node.id === currentNodeId)?.data.blob_id ||
+            null;
+
+          if (nodeImage) {
+            if (blob_id) {
+              console.log(
+                "handleSave: Обновление существующего изображения..."
+              );
+              await updateBlob(currentNodeId, blob_id, nodeImage);
+            } else {
+              console.log("handleSave: Загрузка нового изображения...");
+              blob_id = await uploadImage(nodeImage, currentNodeId);
+            }
+            console.log("handleSave: blob_id после обработки:", blob_id);
           }
 
           await axios.patch(
             `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${currentNodeId}`,
-            { title, text },
-            { params: { is_include_blobs: true } }
+            { title, text, blob_id }
           );
 
-          if (nodeImage) {
-            const formData = new FormData();
-            formData.append("file", nodeImage);
-
-            await axios.post(
-              `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${currentNodeId}/blob`,
-              formData,
-              { params: { blob_type: "image" } }
-            );
-          }
+          console.log("handleSave: Этап успешно сохранен!");
 
           setNodes(
             nodes.map((node) =>
               node.id === currentNodeId
                 ? {
                     ...node,
-                    data: { ...node.data, text: nodeText, image: nodeImageUrl },
+                    data: {
+                      ...node.data,
+                      text: nodeText,
+                      blob_id: blob_id || node.data.blob_id,
+                    },
                   }
                 : node
             )
           );
+
           closeModal();
         } catch (error) {
-          if (axios.isAxiosError(error) && error.response) {
-            console.error("Error details:", error.response.data);
-          } else {
-            console.error("Error updating step:", error);
-          }
+          const err = error as AxiosError;
+          console.error(
+            "handleSave: Ошибка при сохранении этапа:",
+            err.response?.data || err
+          );
         }
       }
     };
@@ -282,6 +514,7 @@ export const OnboardingCanvas = forwardRef(
               label: node.data.label,
               id: node.id,
               onAddStep: addStep,
+              onDelete: () => deleteStep(node.id),
               onClick: () => openModal(node.id),
             },
           }))}
@@ -296,12 +529,18 @@ export const OnboardingCanvas = forwardRef(
           <Controls />
           <Background color='#aaa' gap={16} />
         </ReactFlow>
-        <Modal isOpen={modalIsOpen} onClose={closeModal}>
-          <h2>Добавить данные для этапа {currentNodeId}</h2>
+        <Modal
+          title={`Добавить данные для этапа ${currentNodeId}`}
+          visible={modalIsOpen}
+          onCancel={closeModal}
+          onOk={handleSave}
+          okText='Сохранить'
+          cancelText='Отмена'
+        >
           <div>
-            {nodeImage ? (
+            {nodeImageUrl ? (
               <img
-                src={URL.createObjectURL(nodeImage)}
+                src={nodeImageUrl}
                 alt='Предосмотр'
                 style={{ width: "100%", height: "auto", marginBottom: "10px" }}
               />
@@ -315,15 +554,19 @@ export const OnboardingCanvas = forwardRef(
                 e.target.files && setNodeImage(e.target.files[0])
               }
             />
-            <textarea
+            <input
+              type='text'
               value={nodeText}
               onChange={(e) => setNodeText(e.target.value)}
               placeholder='Введите текст...'
-              style={{ width: "100%", marginTop: "10px" }}
+              style={{
+                width: "100%",
+                marginTop: "10px",
+                padding: "10px",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+              }}
             />
-            <button onClick={handleSave} style={{ marginTop: "10px" }}>
-              Сохранить
-            </button>
           </div>
         </Modal>
       </styles.CanvasContainer>

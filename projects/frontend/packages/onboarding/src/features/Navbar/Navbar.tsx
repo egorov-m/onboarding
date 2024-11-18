@@ -1,13 +1,13 @@
 import React, { FC } from "react";
 
-import * as styles from './Navbar.styles';
+import * as styles from "./Navbar.styles";
 
 interface NavbarProps {
-  links: { to: string, label: string }[];
+  links: { to: string; label: string }[];
 }
 
 export const Navbar: FC<NavbarProps> = ({ links }) => {
-  const prefix = process.env.REACT_APP_SERVER_PATH_PREFIX || '/';
+  const prefix = process.env.REACT_APP_SERVER_PATH_PREFIX || "/";
 
   return (
     <styles.NavbarContainer>

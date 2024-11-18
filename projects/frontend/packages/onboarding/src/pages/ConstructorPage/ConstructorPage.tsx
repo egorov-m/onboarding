@@ -5,6 +5,7 @@ import { OnboardingCanvas } from "../../features/OnboardingCanvas/OnboardingCanv
 import { StatusButton } from "../../features/StatusButton/StatusButton";
 import { SaveButton } from "../../features/SaveButton/SaveButton";
 import * as styles from "./ConstructorPage.styles";
+import { updateProject } from "../ProjectsPage/api/projectsApi";
 
 interface LocationState {
   name: string;
@@ -35,8 +36,15 @@ export const ConstructorPage = () => {
     );
   };
 
-  const handleSave = () => {
-    canvasRef.current?.saveCanvas();
+  const handleSave = async () => {
+    try {
+      canvasRef.current?.saveCanvas();
+
+      await updateProject(projectId!, { name, status });
+      console.log("Проект успешно сохранён!");
+    } catch (error) {
+      console.error("Ошибка при сохранении проекта:", error);
+    }
   };
 
   return (
