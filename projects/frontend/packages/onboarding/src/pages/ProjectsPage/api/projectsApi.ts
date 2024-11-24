@@ -11,7 +11,7 @@ export interface Project {
 export const getProjects = async (): Promise<Project[]> => {
   try {
     const response = await axios.post(
-      "https://cobra-fancy-officially.ngrok-free.app/api/onboarding/boards/list",
+      `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/boards/list`,
       {}
     );
     return response.data.items;
@@ -24,7 +24,7 @@ export const getProjects = async (): Promise<Project[]> => {
 export const createProject = async (name: string): Promise<Project> => {
   try {
     const response = await axios.post(
-      "https://cobra-fancy-officially.ngrok-free.app/api/onboarding/boards/",
+      `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/boards/`,
       { name }
     );
     return response.data;
@@ -37,7 +37,7 @@ export const createProject = async (name: string): Promise<Project> => {
 export const deleteProject = async (projectId: string): Promise<void> => {
   try {
     await axios.delete(
-      `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/boards/${projectId}`
+      `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/boards/${projectId}`
     );
   } catch (error) {
     console.error("Ошибка при удалении проекта", error);
@@ -51,7 +51,7 @@ export const updateProject = async (
 ): Promise<void> => {
   try {
     await axios.patch(
-      `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/boards/${projectId}`,
+      `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/boards/${projectId}`,
       updatedProject
     );
   } catch (error) {

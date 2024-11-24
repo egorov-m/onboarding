@@ -7,7 +7,7 @@ interface NavbarProps {
 }
 
 export const Navbar: FC<NavbarProps> = ({ links }) => {
-  const prefix = process.env.REACT_APP_SERVER_PATH_PREFIX || "/";
+  const prefix = `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_WEB_APP_PATH_PREFIX}`;
 
   return (
     <styles.NavbarContainer>

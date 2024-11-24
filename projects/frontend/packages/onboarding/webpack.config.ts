@@ -6,6 +6,9 @@ import {
   Configuration as DevServerConfiguration,
   ProxyConfigArrayItem,
 } from "webpack-dev-server";
+import dotenv from "dotenv";
+
+dotenv.config({ path: path.resolve(__dirname, "../../../../.env") });
 
 type Mode = "development" | "production";
 
@@ -14,10 +17,14 @@ interface EnvVariables {
   port?: number;
 }
 
+const DOMAIN_NAME = process.env.DOMAIN_NAME;
+const ONBOARDING_WEB_APP_PATH_PREFIX =
+  process.env.ONBOARDING_WEB_APP_PATH_PREFIX;
+
 const proxyConfig: ProxyConfigArrayItem[] = [
   {
     context: ["/api"],
-    target: "https://cobra-fancy-officially.ngrok-free.app",
+    target: DOMAIN_NAME,
     secure: false,
     changeOrigin: true,
     pathRewrite: { "^/api": "" },
@@ -30,7 +37,6 @@ const proxyConfig: ProxyConfigArrayItem[] = [
 
 module.exports = (env: EnvVariables) => {
   const isDev = env.mode === "development";
-  const publicPath = process.env.REACT_APP_SERVER_PATH_PREFIX || "";
 
   const config: webpack.Configuration = {
     entry: path.resolve(__dirname, "src", "index.tsx"),
@@ -38,7 +44,7 @@ module.exports = (env: EnvVariables) => {
       path: path.resolve(__dirname, "build"),
       filename: "[name].[contenthash].js",
       clean: true,
-      publicPath: publicPath,
+      publicPath: ONBOARDING_WEB_APP_PATH_PREFIX,
     },
     module: {
       rules: [
@@ -76,13 +82,14 @@ module.exports = (env: EnvVariables) => {
     plugins: [
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, "public", "index.html"),
-        publicPath,
+        publicPath: ONBOARDING_WEB_APP_PATH_PREFIX,
       }),
       new webpack.ProgressPlugin(),
       new webpack.DefinePlugin({
-        "process.env.REACT_APP_SERVER_PATH_PREFIX": JSON.stringify(
-          process.env.REACT_APP_SERVER_PATH_PREFIX || ""
+        "process.env.ONBOARDING_WEB_APP_PATH_PREFIX": JSON.stringify(
+          ONBOARDING_WEB_APP_PATH_PREFIX
         ),
+        "process.env": JSON.stringify(process.env),
       }),
     ],
     devtool: isDev ? "inline-source-map" : false,
@@ -90,12 +97,13 @@ module.exports = (env: EnvVariables) => {
       ? {
           port: env.port || 3000,
           historyApiFallback: {
-            index: `${publicPath}/index.html`,
+            index: `${ONBOARDING_WEB_APP_PATH_PREFIX}/index.html`,
           },
           open: true,
           hot: true,
           static: {
             directory: path.resolve(__dirname, "public"),
+            publicPath: ONBOARDING_WEB_APP_PATH_PREFIX,
           },
           allowedHosts: "all",
           proxy: proxyConfig,

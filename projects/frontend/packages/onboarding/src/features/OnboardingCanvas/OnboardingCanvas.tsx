@@ -126,7 +126,7 @@ export const OnboardingCanvas = forwardRef(
           `Получение предподписанной ссылки для boardStepId: ${boardStepId}, blobId: ${blobId}`
         );
         const response = await axios.get(
-          `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${boardStepId}/blob/${blobId}`,
+          `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/${boardStepId}/blob/${blobId}`,
           {
             params: { is_include_link: true },
           }
@@ -153,7 +153,7 @@ export const OnboardingCanvas = forwardRef(
         console.log("linkBlobToStep: blobId:", blobId);
 
         await axios.patch(
-          `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${boardStepId}/blob/${blobId}`
+          `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/${boardStepId}/blob/${blobId}`
         );
 
         console.log("linkBlobToStep: Blob успешно привязан!");
@@ -169,7 +169,7 @@ export const OnboardingCanvas = forwardRef(
       try {
         console.log(`Получение списка Blob'ов для boardStepId: ${boardStepId}`);
         const response = await axios.post(
-          `/api/onboarding/board_steps/${boardStepId}/blob/list`,
+          `${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/${boardStepId}/blob/list`,
           {}
         );
         console.log("Ответ от сервера (Blob list):", response.data);
@@ -195,7 +195,7 @@ export const OnboardingCanvas = forwardRef(
         );
 
         const response = await axios.post(
-          `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${boardStepId}/blob`,
+          `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/${boardStepId}/blob`,
           null,
           { params: { blob_type: "image" } }
         );
@@ -231,13 +231,12 @@ export const OnboardingCanvas = forwardRef(
         );
 
         const response = await axios.patch(
-          `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${boardStepId}/blob/${blobId}`,
+          `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/${boardStepId}/blob/${blobId}`,
           null
         );
 
         console.log("updateBlob: Ответ от сервера:", response.data);
 
-        // Используем поле action_link вместо presignedUrl
         const actionLink = response.data?.action_link;
         if (!actionLink) {
           console.error(
@@ -249,7 +248,6 @@ export const OnboardingCanvas = forwardRef(
 
         console.log("updateBlob: action_link успешно получен:", actionLink);
 
-        // Загрузка файла на action_link
         console.log("updateBlob: Загрузка файла на action_link...");
         await axios.put(actionLink, file, {
           headers: {
@@ -275,7 +273,7 @@ export const OnboardingCanvas = forwardRef(
     const fetchSteps = async () => {
       try {
         const response = await axios.post(
-          `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/list/${boardId}`,
+          `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/list/${boardId}`,
           {}
         );
         const steps = response.data.items.map((step: Step) => ({
@@ -304,7 +302,7 @@ export const OnboardingCanvas = forwardRef(
     const deleteStep = async (nodeId: string) => {
       try {
         await axios.delete(
-          `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${nodeId}`
+          `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/${nodeId}`
         );
 
         setNodes((prevNodes) => prevNodes.filter((node) => node.id !== nodeId));
@@ -323,7 +321,7 @@ export const OnboardingCanvas = forwardRef(
     const addStep = async () => {
       try {
         const response = await axios.post(
-          "https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/",
+          `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/`,
           {
             board_id: boardId,
             type: "basic",
@@ -473,7 +471,7 @@ export const OnboardingCanvas = forwardRef(
           }
 
           await axios.patch(
-            `https://cobra-fancy-officially.ngrok-free.app/api/onboarding/board_steps/${currentNodeId}`,
+            `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/${currentNodeId}`,
             { title, text, blob_id }
           );
 

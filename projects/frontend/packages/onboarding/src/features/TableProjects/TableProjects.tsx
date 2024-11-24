@@ -33,7 +33,7 @@ export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
   const handleRowClick = (row: RowData) => {
     if (projectToEdit?.id !== row.id) {
       navigate(
-        `${process.env.REACT_APP_SERVER_PATH_PREFIX}/constructor/${row.id}`,
+        `${process.env.ONBOARDING_WEB_APP_PATH_PREFIX}/constructor/${row.id}`,
         {
           state: { name: row.name, status: row.status },
         }

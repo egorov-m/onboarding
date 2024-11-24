@@ -9,7 +9,7 @@ import { ConstructorPage } from "./pages/ConstructorPage/ConstructorPage";
 
 const router = createBrowserRouter([
   {
-    path: `${process.env.REACT_APP_SERVER_PATH_PREFIX}/`,
+    path: `${process.env.ONBOARDING_WEB_APP_PATH_PREFIX}/`,
     element: <App />,
     children: [
       {
