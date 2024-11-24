@@ -4,7 +4,6 @@ export const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
   margin: 20px 0;
-  font-family: "Montserrat", sans-serif;
 
   cursor: pointer;
 

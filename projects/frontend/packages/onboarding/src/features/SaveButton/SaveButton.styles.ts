@@ -1,7 +1,6 @@
 import styled from "styled-components";
 
 export const Button = styled.button`
-  font-family: "Montserrat", sans-serif;
   padding: 10px 15px;
   background-color: #28a745;
   color: #fff;

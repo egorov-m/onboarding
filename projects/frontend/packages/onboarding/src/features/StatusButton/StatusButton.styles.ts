@@ -5,7 +5,6 @@ interface ButtonProps {
 }
 
 export const Button = styled.button<ButtonProps>`
-  font-family: "Montserrat", sans-serif;
   padding: 10px 15px;
   background-color: ${({ status }) =>
     status === "published" ? "#28a745" : "#ffc107"};

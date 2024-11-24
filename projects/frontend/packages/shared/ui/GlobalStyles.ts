@@ -1,11 +1,12 @@
-import { createGlobalStyle } from 'styled-components';
-import { Colors } from '../constants/Colors';
+import { createGlobalStyle } from "styled-components";
+import { Colors } from "../constants/Colors";
 
 const GlobalStyles = createGlobalStyle`
   *{
   padding: 0;
   margin: 0;
   border: 0;
+  font-family: "Montserrat", sans-serif;
 }
 *, *:before, *:after{
   -moz-box-sizing: border-box;

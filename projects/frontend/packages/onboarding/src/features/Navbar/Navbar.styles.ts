@@ -1,11 +1,10 @@
-import styled from 'styled-components';
-import { Link as RouterLink } from 'react-router-dom';
-import {Colors} from '../../../../shared/constants/Colors';
-import { Container } from 'shared/ui/layout/Container';
+import styled from "styled-components";
+import { Link as RouterLink } from "react-router-dom";
+import { Colors } from "../../../../shared/constants/Colors";
+import { Container } from "shared/ui/layout/Container";
 
 export const NavbarContainer = styled.nav`
   width: 100%;
-  background-color: ${Colors.Orochimaru};
   padding: 1.5rem 0;
 `;
 
@@ -33,5 +32,4 @@ export const StyledLink = styled(RouterLink)`
   color: ${Colors.Black};
   text-decoration: none;
   font-size: 1.2rem;
-  font-family: 'Montserrat', sans-serif;
 `;
