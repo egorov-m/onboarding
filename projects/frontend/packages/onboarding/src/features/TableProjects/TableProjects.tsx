@@ -10,6 +10,7 @@ import {
   deleteProject,
   updateProject,
 } from "../../pages/ProjectsPage/api/projectsApi";
+import { EditIcon, TrashIcon } from "../../../../shared/ui/icons/index";
 
 interface RowData {
   id: string;
@@ -27,8 +28,10 @@ interface TableProjectsProps {
 export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
   const navigate = useNavigate();
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [projectToEdit, setProjectToEdit] = useState<RowData | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
   const handleRowClick = (row: RowData) => {
     if (projectToEdit?.id !== row.id) {
@@ -43,15 +46,25 @@ export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
 
   const handleEditClick = (row: RowData) => {
     setProjectToEdit(row);
-    setIsModalVisible(true);
+    setIsEditModalVisible(true);
   };
 
-  const handleDeleteClick = async (projectId: string) => {
-    try {
-      await deleteProject(projectId);
-      onUpdate(data.filter((project) => project.id !== projectId));
-    } catch (error) {
-      console.error("Не удалось удалить проект", error);
+  const handleDeleteClick = (projectId: string) => {
+    setProjectToDelete(projectId);
+    setIsDeleteModalVisible(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (projectToDelete) {
+      try {
+        await deleteProject(projectToDelete);
+        onUpdate(data.filter((project) => project.id !== projectToDelete));
+      } catch (error) {
+        console.error("Не удалось удалить проект", error);
+      } finally {
+        setIsDeleteModalVisible(false);
+        setProjectToDelete(null);
+      }
     }
   };
 
@@ -64,7 +77,7 @@ export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
             project.id === projectToEdit.id ? projectToEdit : project
           )
         );
-        setIsModalVisible(false);
+        setIsEditModalVisible(false);
       } catch (error) {
         console.error("Не удалось обновить проект", error);
       }
@@ -100,7 +113,15 @@ export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
               <styles.NameColumn onClick={() => handleRowClick(row)}>
                 {row.name}
               </styles.NameColumn>
-              <td>{row.updated_at}</td>
+              <td>
+                {new Intl.DateTimeFormat("ru-RU", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }).format(new Date(row.updated_at))}
+              </td>
               <td>
                 <StarRating rating={row.average_rating} />
               </td>
@@ -108,12 +129,10 @@ export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
                 <styles.Status status={row.status}>{row.status}</styles.Status>
               </td>
               <td>
-                <Button type='primary' onClick={() => handleEditClick(row)}>
-                  Редактировать
-                </Button>
-                <Button type='danger' onClick={() => handleDeleteClick(row.id)}>
-                  Удалить
-                </Button>
+                <styles.IconContainer>
+                  <EditIcon onClick={() => handleEditClick(row)} />
+                  <TrashIcon onClick={() => handleDeleteClick(row.id)} />
+                </styles.IconContainer>
               </td>
             </tr>
           ))}
@@ -122,14 +141,14 @@ export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
 
       <Modal
         title='Редактировать проект'
-        visible={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
+        visible={isEditModalVisible}
+        onCancel={() => setIsEditModalVisible(false)}
         onOk={handleModalOk}
         okText='Сохранить'
         cancelText='Отмена'
       >
         {projectToEdit && (
-          <>
+          <styles.FormWrapper>
             <Input
               value={projectToEdit.name}
               onChange={(e) =>
@@ -141,8 +160,19 @@ export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
               status={projectToEdit.status}
               onToggle={handleStatusToggle}
             />
-          </>
+          </styles.FormWrapper>
         )}
+      </Modal>
+
+      <Modal
+        title='Подтверждение удаления'
+        visible={isDeleteModalVisible}
+        onCancel={() => setIsDeleteModalVisible(false)}
+        onOk={handleConfirmDelete}
+        okText='Удалить'
+        cancelText='Отмена'
+      >
+        <p>Вы уверены, что хотите удалить этот проект?</p>
       </Modal>
     </div>
   );

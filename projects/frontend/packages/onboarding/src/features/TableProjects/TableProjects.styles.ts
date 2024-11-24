@@ -41,3 +41,17 @@ export const NameColumn = styled.td`
   white-space: normal;
   overflow-wrap: break-word;
 `;
+
+export const IconContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  margin-left: 8px;
+`;
+
+export const FormWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+`;

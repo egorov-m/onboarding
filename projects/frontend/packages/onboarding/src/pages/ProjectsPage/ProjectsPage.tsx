@@ -73,9 +73,11 @@ export const ProjectsPage: React.FC = () => {
         <styles.Title>My Projects</styles.Title>
         <SearchProjects onSearch={handleSearch} />
 
-        <Button type='primary' onClick={() => setIsModalVisible(true)}>
-          Создать проект
-        </Button>
+        <styles.ButtonWrapper>
+          <Button type='primary' onClick={() => setIsModalVisible(true)}>
+            Создать проект
+          </Button>
+        </styles.ButtonWrapper>
 
         <TableProjects data={filteredData} onUpdate={handleUpdateProjects} />
       </Container>

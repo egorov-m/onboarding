@@ -32,6 +32,7 @@ export const ModalFooter = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  margin-top: 20px;
 `;
 
 export const Button = styled.button`
