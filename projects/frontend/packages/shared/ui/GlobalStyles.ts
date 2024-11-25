@@ -27,22 +27,33 @@ html, body{
   -ms-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
+  color: ${({ theme }) => theme.textColor || Colors.Black};
 }
+  
+.icon {
+    filter: ${({ theme }) => (theme.isDarkMode ? "invert(1)" : "none")};
+  }
 
 ::selection {
-  background-color: ${Colors.Orochimaru};
-}
-
-::-moz-selection {
-  background-color: ${Colors.Orochimaru};
-}
+    background-color: ${({ theme }) =>
+      theme.selectionColor || Colors.Orochimaru};
+  }
+    
 
 input, button, textarea{font-family: inherit;}
 
 input::-ms-clear{display:none;}
 button{cursor: pointer;}
 button::-moz-focus-inner{padding: 0;border: 0;}
-a, a:visited{text-decoration: none;}
+a, a:visited {
+    text-decoration: none;
+    color: ${({ theme }) => theme.textColor || Colors.Black};
+  }
+  a:hover {
+    text-decoration: underline;
+    color: ${({ theme }) =>
+      theme.linkHoverColor || theme.textColor || Colors.Black};
+  }
 a:hover{text-decoration: none;}
 ul li{list-style-type: none;}
 img{vertical-align: top;}
