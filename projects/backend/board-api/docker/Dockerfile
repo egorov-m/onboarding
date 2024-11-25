@@ -25,19 +25,18 @@ RUN apt-get update \
 
 RUN curl -sSL https://install.python-poetry.org | python -
 
-
 FROM poetry-base AS builder-base
 
 WORKDIR $PYSETUP_PATH
-COPY ./onboarding-api/pyproject.toml ./onboarding-api/poetry.lock ./
+COPY ./board-api/pyproject.toml ./board-api/poetry.lock ./
 COPY ./onboarding-shared ../onboarding-shared
 
 RUN poetry install --without dev
 
 FROM builder-base AS builder-prod
 
-WORKDIR /opt/onboarding/onboarding-api
-COPY ./onboarding-api ./
+WORKDIR /opt/onboarding/board-api
+COPY ./board-api ./
 RUN pip install --no-deps ./
 
 FROM python-base AS development
@@ -45,7 +44,7 @@ FROM python-base AS development
 ENV FASTAPI_ENV=development
 WORKDIR $PYSETUP_PATH
 
-COPY ./onboarding-api ./
+COPY ./board-api ./
 COPY ./onboarding-shared ../onboarding-shared
 COPY --from=builder-base $POETRY_HOME $POETRY_HOME
 COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
@@ -54,20 +53,18 @@ RUN poetry install
 
 EXPOSE 80
 
-ENTRYPOINT ["sh", "-c", "poetry run alembic \
-                         -c /opt/pysetup/alembic.ini upgrade head &&\
-                         poetry run uvicorn \
+ENTRYPOINT ["sh", "-c", "poetry run uvicorn \
                          --reload \
                          --host 0.0.0.0 \
                          --port 80 \
                          --log-level debug \
-                         onboarding_api.main:router"]
+                         board_api.main:router"]
 
 FROM python-base AS production
 
 LABEL maintainer="mikhailegorov_dev@outlook.com"
-LABEL org.opencontainers.image.title="Onboarding API"
-LABEL org.opencontainers.image.description="Onboarding API service"
+LABEL org.opencontainers.image.title="Board API"
+LABEL org.opencontainers.image.description="Board API service"
 LABEL org.opencontainers.image.url="https://github.com/egorov-m/onboarding"
 LABEL org.opencontainers.image.source="https://github.com/egorov-m/onboarding"
 LABEL org.opencontainers.image.documentation="https://github.com/egorov-m/onboarding"
@@ -79,19 +76,17 @@ ARG GID=1500
 ENV FASTAPI_ENV=production
 
 RUN groupadd -g "${GID}" python  \
-    && useradd --create-home --no-log-init -u "${UID}" -g "${GID}" onboarding-api
+    && useradd --create-home --no-log-init -u "${UID}" -g "${GID}" board-api
 
-USER onboarding-api
-WORKDIR /usr/onboarding/onboarding-api
+USER board-api
+WORKDIR /usr/onboarding/board-api
 
 COPY --from=builder-prod $PYSETUP_PATH $PYSETUP_PATH
-COPY ./onboarding-api/bin/run.py ./bin/run.py
-COPY ./onboarding-api/alembic ./alembic
-COPY ./onboarding-api/alembic.ini ./alembic.ini
-COPY ./onboarding-api/docker/docker-entrypoint.sh ./docker/docker-entrypoint.sh
+COPY ./board-api/bin/run.py ./bin/run.py
+COPY ./board-api/docker/docker-entrypoint.sh ./docker/docker-entrypoint.sh
 
 EXPOSE 80
-ENTRYPOINT ["sh", "/usr/onboarding/onboarding-api/docker/docker-entrypoint.sh"]
+ENTRYPOINT ["sh", "/usr/onboarding/board-api/docker/docker-entrypoint.sh"]
 
 ARG SOURCE_COMMIT
 ENV ONBOARDING_API_BUILD=${SOURCE_COMMIT:-unknown}

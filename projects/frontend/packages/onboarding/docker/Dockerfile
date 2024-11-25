@@ -1,7 +1,7 @@
 ARG BUILDER_BASE_IMAGE
 ARG SERVER_BASE_IMAGE
 
-FROM ${BUILDER_BASE_IMAGE} as builder-base
+FROM ${BUILDER_BASE_IMAGE} AS builder-base
 
 COPY ./packages/onboarding /tmp/packages/onboarding
 COPY ./packages/shared /tmp/packages/shared
@@ -12,7 +12,7 @@ COPY ./tsconfig.json /tmp/tsconfig.json
 
 WORKDIR /tmp/
 
-FROM builder-base as builder-prod
+FROM builder-base AS builder-prod
 
 ARG REACT_APP_SERVER_PATH_PREFIX
 
@@ -22,7 +22,7 @@ WORKDIR /tmp/packages/onboarding
 
 RUN npm run build:prod
 
-FROM builder-base as development
+FROM builder-base AS development
 
 ENV REACT_APP_SERVER_PATH_PREFIX="/app/onboarding"
 
@@ -31,7 +31,7 @@ RUN npm install
 ENTRYPOINT ["npm", "run"]
 CMD ["start-onboarding"]
 
-FROM ${SERVER_BASE_IMAGE} as production
+FROM ${SERVER_BASE_IMAGE} AS production
 
 LABEL maintainer="egor.rumyancev.9494@mail.ru"
 LABEL org.opencontainers.image.title="Onboarding Web APP"
