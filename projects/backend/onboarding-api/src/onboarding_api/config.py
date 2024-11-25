@@ -3,7 +3,7 @@ from os import environ
 from json import loads
 from urllib.parse import quote
 
-from .utils import canonical_s3_bucket_name
+from onboarding_shared import utils
 
 
 PROJECT_NAME = environ.get("PROJECT_NAME", "Onboarding API")
@@ -56,7 +56,7 @@ S3Buckets = namedtuple("S3Buckets", ("board_images",))
 
 _S3_BOARD_IMAGES_BUCKET = environ.get("S3_BOARD_IMAGES_BUCKET", "images")
 S3_BUCKETS = S3Buckets(
-    canonical_s3_bucket_name(_S3_BOARD_IMAGES_BUCKET, S3_BUCKETS_PREFIX)
+    utils.canonical_s3_bucket_name(_S3_BOARD_IMAGES_BUCKET, S3_BUCKETS_PREFIX)
 )
 S3_CLIENT_DISABLE_INITIALIZATION = loads(environ.get("S3_CLIENT_DISABLE_INITIALIZATION", "False").lower())
 

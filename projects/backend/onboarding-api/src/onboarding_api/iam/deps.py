@@ -1,17 +1,16 @@
 from http import HTTPStatus
 from typing import Optional
-from uuid import uuid4
 
 from fastapi import Security
 from fastapi.security import APIKeyHeader
 from pydantic import EmailStr
 
 from onboarding_shared.exceptions import ApiException, ApiErrorCode
+from onboarding_shared import utils
 
 from .data import AuthUserData
 from ..config import AUTH_USER_EMAIL_HEADER_NAME
 from ..database import database, queries
-from ..utils import generate_id
 
 auth_user_email_header = APIKeyHeader(
     name=AUTH_USER_EMAIL_HEADER_NAME,
@@ -38,7 +37,7 @@ class get_auth_user:
         async with database.transaction():
             auth_user = await database.fetch_one(query=get_query)
             if auth_user is None:
-                user_id = generate_id()
+                user_id = utils.generate_id()
                 auth_user = await database.fetch_one(query=queries.create_user_query(user_id, auth_user_email))
 
             if auth_user is not None:

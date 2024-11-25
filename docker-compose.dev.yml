@@ -26,6 +26,21 @@ services:
       - ${DEPLOY_DIR}/projects/backend/onboarding-api/tests:/opt/pysetup/tests
       - ${DEPLOY_DIR}/projects/backend/onboarding-api/alembic:/opt/pysetup/alembic
 
+  board-api:
+    build:
+      target: development
+    environment:
+      - DEBUG=True
+    ports:
+      - "8081:80"
+    volumes:
+      - ${DEPLOY_DIR}/projects/backend/board-api/src:/opt/pysetup/src
+      - ${DEPLOY_DIR}/projects/backend/board-api/tests:/opt/pysetup/tests
+
+  board-events-db:
+    ports:
+      - "8123:8123"
+
   onboarding-db:
     ports:
       - "5551:5432"

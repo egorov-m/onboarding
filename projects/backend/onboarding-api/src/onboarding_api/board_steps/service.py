@@ -5,6 +5,7 @@ from fastapi import BackgroundTasks
 
 from onboarding_shared.exceptions import ApiException, ApiErrorCode
 from onboarding_shared.schemas import protocol
+from onboarding_shared import utils
 
 from .repository import BoardStepsRepository
 from ..config import MAX_COUNT_ATTACHED_BLOB_BY_BOARD_STEP
@@ -12,7 +13,6 @@ from ..database import database
 from ..boards.repository import BoardRepository
 from ..blobs.repository import BlobRepository
 from .. import storage
-from ..utils import enum_from_int
 
 
 class BoardStepsApiService:
@@ -30,7 +30,7 @@ class BoardStepsApiService:
 
         return protocol.BoardStep(
             id=record["id"],
-            type=enum_from_int(protocol.BoardStepType, record["type"]),
+            type=utils.enum_from_int(protocol.BoardStepType, record["type"]),
             title=record["title"],
             text=record["text"],
             index=record["index"],
@@ -43,7 +43,7 @@ class BoardStepsApiService:
     def _blob_record_to_schema(cls, record, link=None) -> protocol.Blob:
         return protocol.Blob(
             id=record["id"],
-            type=enum_from_int(protocol.BlobType, record["type"]),
+            type=utils.enum_from_int(protocol.BlobType, record["type"]),
             link=link,
             created_at=record["created_at"],
             updated_at=record["updated_at"],
@@ -178,7 +178,7 @@ class BoardStepsApiService:
         async for record in blob_records_iterator:
             link = None
             if is_include_link:
-                blob_type = enum_from_int(protocol.BlobType, record["type"])
+                blob_type = utils.enum_from_int(protocol.BlobType, record["type"])
                 link = storage.presigned_get_object(step_id, record["id"], blob_type)
             blob_list.append(cls._blob_record_to_schema(record, link))
 
@@ -288,7 +288,7 @@ class BoardStepsApiService:
         step_record = await cls._get_step_record_by_id(step_id, owner_id)
         blob_record = await cls._get_blob_record(step_id, blob_id)
 
-        blob_type = enum_from_int(protocol.BlobType, blob_record["type"])
+        blob_type = utils.enum_from_int(protocol.BlobType, blob_record["type"])
         action_link = storage.presigned_put_object(step_record["id"], blob_record["id"], blob_type)
 
         return protocol.ActionBlobToStepResponse(
@@ -323,7 +323,7 @@ class BoardStepsApiService:
 
         link = None
         if is_include_link:
-            blob_type = enum_from_int(protocol.BlobType, blob_record["type"])
+            blob_type = utils.enum_from_int(protocol.BlobType, blob_record["type"])
             link = storage.presigned_get_object(step_record["id"], blob_record["id"], blob_type)
 
         return cls._blob_record_to_schema(blob_record, link)
@@ -339,5 +339,5 @@ class BoardStepsApiService:
             storage.remove_object,
             step_id=step_record["id"],
             blob_id=blob_record["id"],
-            blob_type=enum_from_int(protocol.BlobType, blob_record["type"]),
+            blob_type=utils.enum_from_int(protocol.BlobType, blob_record["type"]),
         )
