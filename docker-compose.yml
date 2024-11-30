@@ -1,4 +1,3 @@
-version: "3.9"
 name: ${PROJECT_NAME}
 
 x-common-restart-policy: &common-restart-policy
@@ -110,6 +109,89 @@ services:
       - "traefik.http.services.onboarding-api-svc.loadbalancer.server.port=80"
       - "traefik.http.routers.onboarding-api-rtr.middlewares=chain-oauth@file"
 
+  board-api:
+    build:
+      context: projects/backend
+      dockerfile: board-api/docker/Dockerfile
+      target: production
+      args:
+        - BASE_IMAGE=${BOARD_API_BASE_IMAGE}
+    container_name: ${PROJECT_NAME}_board-api
+    environment:
+      - SERVER_DOMAIN_NAME=${DOMAIN_NAME}
+      - SERVER_PROTOCOL=https
+      - SERVER_PATH_PREFIX=${BOARD_API_PATH_PREFIX}
+      - DEBUG=False
+      - WORKERS=${BOARD_API_WORKERS}
+      - WORKER_TIMEOUT=${BOARD_API_WORKER_TIMEOUT}
+      - ONBOARDING_DB_HOST=${ONBOARDING_DB_HOST}
+      - ONBOARDING_DB_PORT=${ONBOARDING_DB_PORT}
+      - ONBOARDING_DB_NAME=${ONBOARDING_DB_NAME}
+      - ONBOARDING_DB_USER=${ONBOARDING_DB_USER}
+      - ONBOARDING_DB_PASSWORD=${ONBOARDING_DB_PASSWORD}
+      - ONBOARDING_S3_HOST=${S3_HOST}
+      - ONBOARDING_S3_PORT=${S3_PORT}
+      - ONBOARDING_S3_SECURE=${S3_SECURE}
+      - ONBOARDING_S3_CERT_CHECK=${S3_CERT_CHECK}
+      - ONBOARDING_S3_ACCESS_KEY=${S3_ROOT_USER}
+      - ONBOARDING_S3_SECRET_KEY=${S3_ROOT_PASSWORD}
+      - ONBOARDING_S3_BUCKETS_PREFIX=${S3_BUCKETS_PREFIX}
+      - BOARD_SYNC_TOKEN_SECRET=${BOARD_SYNC_TOKEN_SECRET}
+    networks:
+      - onboarding-db
+      #      - onboarding-minio
+      - board-api-proxy
+    depends_on:
+      traefik:
+        condition: service_healthy
+      onboarding-db:
+        condition: service_healthy
+    #      minio:
+    #        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - onboarding
+      - all
+    <<: *common-security-opt
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: "1G"
+      <<: *common-restart-policy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.board-api-rtr.entrypoints=websecure"
+      - "traefik.http.routers.board-api-rtr.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`${BOARD_API_PATH_PREFIX}`)"
+      - "traefik.http.routers.board-api-rtr.tls=true"
+      - "traefik.http.routers.board-api-rtr.service=board-api-svc"
+      - "traefik.http.services.board-api-svc.loadbalancer.server.port=80"
+      - "traefik.http.routers.board-api-rtr.middlewares=chain-no-auth@file"
+
+  board-events-db:
+    image: ${BOARD_CLICKHOUSE_IMAGE}
+    container_name: ${PROJECT_NAME}_board-clickhouse
+    environment:
+      - CLICKHOUSE_DB=${BOARD_EVENTS_DB_NAME}
+      - CLICKHOUSE_USER=${BOARD_EVENTS_DB_USER}
+      - CLICKHOUSE_PASSWORD=${BOARD_EVENTS_DB_PASSWORD}
+    networks:
+      - board-events-db
+    volumes:
+      - ${DEPLOY_DIR}/projects/backend/board-api/clickhouse/init.sh:/docker-entrypoint-initdb.d/init.sh:ro
+      - board-events-db:/var/lib/clickhouse/
+    restart: unless-stopped
+    profiles:
+      - infra
+      - all
+    <<: *common-security-opt
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: "2G"
+      <<: *common-restart-policy
+
   onboarding-db:
     image: ${ONBOARDING_DB_IMAGE}
     container_name: ${PROJECT_NAME}_onboarding-db
@@ -119,6 +201,8 @@ services:
       - POSTGRES_DB=${ONBOARDING_DB_NAME}
     networks:
       - onboarding-db
+    volumes:
+      - onboarding-db:/var/lib/postgresql/data
     healthcheck:
       test:
         [
@@ -421,6 +505,8 @@ services:
       - POSTGRES_DB=${DEX_DB_NAME}
     networks:
       - dex
+    volumes:
+      - dex-db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DEX_DB_USER} -d ${DEX_DB_NAME}"]
       interval: 10s
@@ -438,11 +524,19 @@ services:
           memory: "512m"
       <<: *common-restart-policy
 
+volumes:
+  board-events-db:
+  onboarding-db:
+  dex-db:
+
+
 networks:
   default:
+  board-events-db:
   onboarding-db:
   #  onboarding-minio:
   onboarding-api-proxy:
+  board-api-proxy:
   onboarding-web-app-proxy:
   docker-socket-proxy:
   #  minio-proxy:

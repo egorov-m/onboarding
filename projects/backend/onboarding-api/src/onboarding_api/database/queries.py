@@ -2,7 +2,7 @@ from typing import Optional, Iterable
 
 from sqlalchemy import Select, Insert, Update, Delete, func, select, join
 
-from onboarding_api.database.tables import user_table, board_table, board_step_table, blob_table, board_step_blob_table
+from ..database.tables import user_table, board_table, board_step_table, blob_table, board_step_blob_table
 
 
 def get_user_by_email_query(email: str) -> Select:

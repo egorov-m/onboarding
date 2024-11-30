@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "onboarding-api"
+name = "board-api"
 version = "0.0.1"
 description = ""
 authors = ["Mikhail Egorov <mikhailegorov_dev@outlook.com>"]
@@ -7,19 +7,20 @@ maintainers = ["Mikhail Egorov <mikhailegorov_dev@outlook.com>"]
 readme = "README.md"
 homepage = "https://github.com/egorov-m/onboarding"
 documentation = "https://github.com/egorov-m/onboarding/tree/main/docs"
-packages = [{include = "onboarding_api", from="src"}]
+packages = [{include = "board_api", from="src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
 onboarding-shared = {path = "../onboarding-shared", develop = false}
+clickhouse-connect = "^0.8.6"
 fastapi = "^0.115.0"
 pydantic = {extras = ["email"], version = "^2.9.2"}
 databases = "^0.9.0"
 asyncpg = "^0.29.0"
-alembic = "^1.13.3"
 uvicorn = "^0.31.0"
 gunicorn = "^23.0.0"
 minio = "^7.2.9"
+pyjwt = "^2.10.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.6.9"

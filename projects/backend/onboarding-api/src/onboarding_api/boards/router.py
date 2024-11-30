@@ -1,7 +1,7 @@
 from uuid import UUID
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends,BackgroundTasks
+from fastapi import APIRouter, Depends, BackgroundTasks
 
 from onboarding_shared.schemas import protocol
 

@@ -4,13 +4,13 @@ from fastapi import BackgroundTasks
 
 from onboarding_shared.exceptions import ApiException, ApiErrorCode
 from onboarding_shared.schemas import protocol
+from onboarding_shared import utils
 
 from .repository import BoardRepository
 from .. import storage
 from ..board_steps.repository import BoardStepsRepository
 from ..blobs.repository import BlobRepository
 from ..database import database
-from ..utils import enum_from_int
 
 
 class BoardsApiService:
@@ -27,7 +27,7 @@ class BoardsApiService:
             created_at=record["created_at"],
             updated_at=record["updated_at"],
             average_rating=record["average_rating"],
-            status=enum_from_int(protocol.BoardStatus, record["status"])
+            status=utils.enum_from_int(protocol.BoardStatus, record["status"])
         )
 
     @classmethod

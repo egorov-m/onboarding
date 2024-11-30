@@ -8,6 +8,7 @@ from pydantic import (
     conint,
     HttpUrl,
     constr,
+    Extra,
 )
 
 from ..exceptions import ApiErrorCode
@@ -152,3 +153,43 @@ class UpdateBoardStepRequest(BaseSchema):
 
 class BoardStepListResponse(_ListResponse):
     items: List[BoardStep]
+
+
+class BoardSync(BaseSchema):
+    board_id: UUID
+    board_step_id: UUID
+    rating: Optional[int] = None
+    finalized: bool = False
+
+
+class BoardSyncSchemaItem(BaseSchema):
+    board_step_id: UUID
+    type: BoardStepType
+    is_passed_board_step: bool
+    index: int
+
+
+class BoardSyncSchema(_ListResponse):
+    items: List[BoardSyncSchemaItem]
+
+
+class BoardSyncRequest(BaseSchema, extra=Extra.ignore):
+    board_id: Optional[UUID] = None
+    board_step_id: Optional[UUID] = None
+    rating: Optional[conint(ge=0, le=5)] = None
+    finalized: Optional[bool] = None
+
+
+class BoardSyncDataBlob(BaseSchema):
+    id: UUID
+    type: BlobType
+    link: Optional[HttpUrl] = None
+
+
+class BoardSyncData(BaseSchema):
+    id: UUID
+    type: BoardStepType
+    title: str
+    text: str
+    index: int
+    blobs: Optional[List[BoardSyncDataBlob]]

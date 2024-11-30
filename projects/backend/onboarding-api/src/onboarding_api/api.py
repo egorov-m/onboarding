@@ -1,8 +1,9 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from onboarding_api.board_steps import board_steps_api
-from onboarding_api.boards import boards_api
+from .board_steps import board_steps_api
+from .boards import boards_api
+
 
 root_api = APIRouter(
     default_response_class=JSONResponse,
