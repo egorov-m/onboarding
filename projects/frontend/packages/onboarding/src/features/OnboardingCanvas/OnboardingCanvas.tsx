@@ -553,7 +553,9 @@ export const OnboardingCanvas = forwardRef(
           <Background color='#aaa' gap={16} />
         </ReactFlow>
         <Modal
-          title={`Добавить данные для этапа ${currentNodeId}`}
+          title={`Добавить данные для этапа ${nodes.findIndex(
+            (node) => node.id === currentNodeId
+          )}`}
           visible={modalIsOpen}
           onCancel={closeModal}
           onOk={handleSave}

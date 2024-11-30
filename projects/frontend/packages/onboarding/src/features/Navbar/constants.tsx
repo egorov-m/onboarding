@@ -10,5 +10,5 @@ export const navLinks: NavLink[] = [
   { to: "/", label: "Logo" },
   { to: "/analyst", label: "Analyst" },
   { to: "/projects", label: "Projects" },
-  { to: "/logout", icon: <LogoutIcon width={20} height={20} /> },
+  { to: "#", icon: <LogoutIcon width={20} height={20} /> },
 ];

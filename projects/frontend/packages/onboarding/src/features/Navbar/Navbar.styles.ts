@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { Link as RouterLink } from "react-router-dom";
-import { Colors } from "../../../../shared/constants/Colors";
 import { Container } from "shared/ui/layout/Container";
 
 export const NavbarContainer = styled.nav`
