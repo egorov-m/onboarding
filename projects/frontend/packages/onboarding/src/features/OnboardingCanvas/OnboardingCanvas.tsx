@@ -73,6 +73,12 @@ export const OnboardingCanvas = forwardRef(
       else fetchSteps();
     }, [boardId]);
 
+    const saveToLocalStorage = () => {
+      localStorage.setItem(`nodes-${boardId}`, JSON.stringify(nodes));
+      localStorage.setItem(`edges-${boardId}`, JSON.stringify(edges));
+      console.log("Состояние узлов и связей сохранено в localStorage.");
+    };
+
     const uploadImage = async (file: File, boardStepId: string) => {
       console.log("uploadImage: Начало загрузки изображения.");
       console.log("uploadImage: file:", file);
@@ -365,34 +371,51 @@ export const OnboardingCanvas = forwardRef(
     };
 
     const onNodesChange = useCallback(
-      (changes: NodeChange[]) =>
-        setNodes((nds) => applyNodeChanges(changes, nds)),
-      []
+      (changes: NodeChange[]) => {
+        setNodes((nds) => {
+          const updatedNodes = applyNodeChanges(changes, nds);
+          saveToLocalStorage();
+          return updatedNodes;
+        });
+      },
+      [nodes, boardId]
     );
 
     const onEdgesChange = useCallback(
-      (changes: EdgeChange[]) =>
-        setEdges((eds) => applyEdgeChanges(changes, eds)),
-      []
+      (changes: EdgeChange[]) => {
+        setEdges((eds) => {
+          const updatedEdges = applyEdgeChanges(changes, eds);
+          saveToLocalStorage(); // Сохраняем связи
+          return updatedEdges;
+        });
+      },
+      [edges, boardId]
     );
 
-    const onConnect: OnConnect = useCallback((params: Connection) => {
-      const { source, target } = params;
+    const onConnect: OnConnect = useCallback(
+      (params: Connection) => {
+        const { source, target } = params;
 
-      if (source && target && parseInt(source) + 1 === parseInt(target)) {
-        const newEdge: Edge = {
-          id: `e${source}-${target}`,
-          source,
-          target,
-          animated: true,
-        };
-        setEdges((eds) => addEdge(newEdge, eds));
-      } else {
-        console.warn(
-          `Некорректное соединение: ${source} не может соединяться с ${target}`
-        );
-      }
-    }, []);
+        if (source && target && parseInt(source) + 1 === parseInt(target)) {
+          const newEdge: Edge = {
+            id: `e${source}-${target}`,
+            source,
+            target,
+            animated: true,
+          };
+          setEdges((eds) => {
+            const updatedEdges = addEdge(newEdge, eds);
+            saveToLocalStorage(); // Сохраняем в localStorage после обновления связей
+            return updatedEdges;
+          });
+        } else {
+          console.warn(
+            `Некорректное соединение: ${source} не может соединяться с ${target}`
+          );
+        }
+      },
+      [edges, boardId]
+    );
 
     const openModal = async (nodeId: string) => {
       const currentNode = nodes.find((node) => node.id === nodeId);
@@ -512,6 +535,7 @@ export const OnboardingCanvas = forwardRef(
               label: node.data.label,
               id: node.id,
               isLastNode: index === nodes.length - 1,
+              isFirstNode: index === 0,
               onAddStep: addStep,
               onDelete: () => deleteStep(node.id),
               onClick: () => openModal(node.id),

@@ -5,6 +5,7 @@ interface CustomNodeData {
   label: string;
   id: string;
   isLastNode: boolean;
+  isFirstNode: boolean;
   onAddStep: (id: string) => void;
   onDelete: () => void;
   onClick: () => void;
@@ -32,24 +33,22 @@ export const CustomNode: React.FC<{ data: CustomNodeData }> = ({ data }) => {
           alignItems: "center",
         }}
       >
-        {data.isLastNode && (
-          <>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                data.onDelete();
-              }}
-              style={{
-                backgroundColor: "white",
-                border: "none",
-                color: "red",
-                cursor: "pointer",
-                fontSize: "14px",
-              }}
-            >
-              -
-            </button>
-          </>
+        {data.isLastNode && !data.isFirstNode && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              data.onDelete();
+            }}
+            style={{
+              backgroundColor: "white",
+              border: "none",
+              color: "red",
+              cursor: "pointer",
+              fontSize: "14px",
+            }}
+          >
+            -
+          </button>
         )}
 
         <strong style={{ margin: "0 10px" }}>{data.label}</strong>
