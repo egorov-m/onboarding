@@ -4,6 +4,7 @@ import { Handle, Position } from "react-flow-renderer";
 interface CustomNodeData {
   label: string;
   id: string;
+  isLastNode: boolean;
   onAddStep: (id: string) => void;
   onDelete: () => void;
   onClick: () => void;
@@ -31,39 +32,45 @@ export const CustomNode: React.FC<{ data: CustomNodeData }> = ({ data }) => {
           alignItems: "center",
         }}
       >
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            data.onDelete();
-          }}
-          style={{
-            backgroundColor: "white",
-            border: "none",
-            color: "red",
-            cursor: "pointer",
-            fontSize: "14px",
-          }}
-        >
-          -
-        </button>
+        {data.isLastNode && (
+          <>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                data.onDelete();
+              }}
+              style={{
+                backgroundColor: "white",
+                border: "none",
+                color: "red",
+                cursor: "pointer",
+                fontSize: "14px",
+              }}
+            >
+              -
+            </button>
+          </>
+        )}
 
         <strong style={{ margin: "0 10px" }}>{data.label}</strong>
 
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            data.onAddStep(data.id);
-          }}
-          style={{
-            backgroundColor: "white",
-            color: "green",
-            cursor: "pointer",
-            border: "none",
-            fontSize: "14px",
-          }}
-        >
-          +
-        </button>
+        {data.isLastNode && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              data.onAddStep(data.id);
+            }}
+            style={{
+              backgroundColor: "white",
+              color: "green",
+              cursor: "pointer",
+              border: "none",
+              fontSize: "14px",
+            }}
+          >
+            +
+          </button>
+        )}
       </div>
 
       <Handle type='source' position={Position.Right} id='a' />

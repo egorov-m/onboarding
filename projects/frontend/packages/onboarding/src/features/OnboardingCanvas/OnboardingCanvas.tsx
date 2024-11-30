@@ -506,11 +506,12 @@ export const OnboardingCanvas = forwardRef(
     return (
       <styles.CanvasContainer height={800}>
         <ReactFlow
-          nodes={nodes.map((node) => ({
+          nodes={nodes.map((node, index) => ({
             ...node,
             data: {
               label: node.data.label,
               id: node.id,
+              isLastNode: index === nodes.length - 1,
               onAddStep: addStep,
               onDelete: () => deleteStep(node.id),
               onClick: () => openModal(node.id),
