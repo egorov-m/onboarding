@@ -14,7 +14,7 @@ services:
     build:
       context: projects/frontend
       dockerfile: packages/onboarding/docker/Dockerfile
-      target: development # production - not supported yet
+      target: development  # production - not supported yet
       args:
         - BUILDER_BASE_IMAGE=${ONBOARDING_WEB_APP_BUILDER_BASE_IMAGE}
         - SERVER_BASE_IMAGE=${ONBOARDING_WEB_APP_SERVER_BASE_IMAGE}
@@ -80,15 +80,15 @@ services:
       - S3_BUCKETS_PREFIX=${S3_BUCKETS_PREFIX}
     networks:
       - onboarding-db
-      #      - onboarding-minio
+#      - onboarding-minio
       - onboarding-api-proxy
     depends_on:
       traefik:
         condition: service_healthy
       onboarding-db:
         condition: service_healthy
-    #      minio:
-    #        condition: service_healthy
+#      minio:
+#        condition: service_healthy
     restart: unless-stopped
     profiles:
       - onboarding
@@ -204,11 +204,7 @@ services:
     volumes:
       - onboarding-db:/var/lib/postgresql/data
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${ONBOARDING_DB_USER} -d ${ONBOARDING_DB_NAME}",
-        ]
+      test: [ "CMD-SHELL", "pg_isready -U ${ONBOARDING_DB_USER} -d ${ONBOARDING_DB_NAME}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -224,50 +220,50 @@ services:
           memory: "512m"
       <<: *common-restart-policy
 
-  # difficulties with output behind proxy, can't use prefix path
-  #  minio:
-  #    image: ${MINIO_IMAGE}
-  #    container_name: ${PROJECT_NAME}_minio
-  #    environment:
-  #      - MINIO_ROOT_USER=${S3_ROOT_USER}
-  #      - MINIO_ROOT_PASSWORD=${S3_ROOT_PASSWORD}
-  #      - MINIO_BROWSER=off
-  #      - MINIO_SERVER_URL=https://${DOMAIN_NAME}
-  #    networks:
-  #      - minio-proxy
-  #      - onboarding-minio
-  #    depends_on:
-  #      traefik:
-  #        condition: service_healthy
-  #    command:
-  #      - server
-  #      - /data
-  #    healthcheck:
-  #      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
-  #      interval: 30s
-  #      timeout: 20s
-  #      retries: 3
-  #    restart: unless-stopped
-  #    profiles:
-  #      - infra
-  #      - all
-  #    <<: *common-security-opt
-  #    deploy:
-  #      resources:
-  #        limits:
-  #          cpus: "1"
-  #          memory: "1G"
-  #      <<: *common-restart-policy
-  #    labels:
-  #      - "traefik.enable=true"
-  #      - "traefik.http.routers.minio-rtr.entrypoints=websecure"
-  #      - "traefik.http.routers.minio-rtr.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`${S3_PATH_PREFIX}`)"
-  #      - "traefik.http.middlewares.s3-stripprefix.stripprefix.prefixes=${S3_PATH_PREFIX}"
-  #      - "traefik.http.routers.minio-rtr.middlewares=s3-stripprefix"
-  #      - "traefik.http.routers.minio-rtr.tls=true"
-  #      - "traefik.http.routers.minio-rtr.service=minio-svc"
-  #      - "traefik.http.services.minio-svc.loadbalancer.server.port=9000"
-  ##      - "traefik.http.routers.minio-rtr.middlewares=chain-no-auth@file"
+# difficulties with output behind proxy, can't use prefix path
+#  minio:
+#    image: ${MINIO_IMAGE}
+#    container_name: ${PROJECT_NAME}_minio
+#    environment:
+#      - MINIO_ROOT_USER=${S3_ROOT_USER}
+#      - MINIO_ROOT_PASSWORD=${S3_ROOT_PASSWORD}
+#      - MINIO_BROWSER=off
+#      - MINIO_SERVER_URL=https://${DOMAIN_NAME}
+#    networks:
+#      - minio-proxy
+#      - onboarding-minio
+#    depends_on:
+#      traefik:
+#        condition: service_healthy
+#    command:
+#      - server
+#      - /data
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+#      interval: 30s
+#      timeout: 20s
+#      retries: 3
+#    restart: unless-stopped
+#    profiles:
+#      - infra
+#      - all
+#    <<: *common-security-opt
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "1"
+#          memory: "1G"
+#      <<: *common-restart-policy
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.minio-rtr.entrypoints=websecure"
+#      - "traefik.http.routers.minio-rtr.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`${S3_PATH_PREFIX}`)"
+#      - "traefik.http.middlewares.s3-stripprefix.stripprefix.prefixes=${S3_PATH_PREFIX}"
+#      - "traefik.http.routers.minio-rtr.middlewares=s3-stripprefix"
+#      - "traefik.http.routers.minio-rtr.tls=true"
+#      - "traefik.http.routers.minio-rtr.service=minio-svc"
+#      - "traefik.http.services.minio-svc.loadbalancer.server.port=9000"
+##      - "traefik.http.routers.minio-rtr.middlewares=chain-no-auth@file"
 
   docker-socket-proxy:
     image: ${DOCKER_SOCKET_PROXY_IMAGE}
@@ -315,13 +311,13 @@ services:
       - onboarding-api-proxy
       - docker-socket-proxy
       - oauth2-proxy
-      #      - minio-proxy
+#      - minio-proxy
       - dex-proxy
     depends_on:
       docker-socket-proxy:
         condition: service_started
     healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      test: [ "CMD", "traefik", "healthcheck", "--ping" ]
       interval: 5s
       retries: 3
       start_period: 5s
@@ -508,7 +504,7 @@ services:
     volumes:
       - dex-db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DEX_DB_USER} -d ${DEX_DB_NAME}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${DEX_DB_USER} -d ${DEX_DB_NAME}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -534,12 +530,12 @@ networks:
   default:
   board-events-db:
   onboarding-db:
-  #  onboarding-minio:
+#  onboarding-minio:
   onboarding-api-proxy:
   board-api-proxy:
   onboarding-web-app-proxy:
   docker-socket-proxy:
-  #  minio-proxy:
+#  minio-proxy:
   dex-proxy:
   dex:
   oauth2:
