@@ -3,7 +3,7 @@ ARG SERVER_BASE_IMAGE
 
 FROM ${BUILDER_BASE_IMAGE} AS builder-base
 
-COPY ./packages/onboarding /tmp/packages/onboarding
+COPY ./packages/board /tmp/packages/board
 COPY ./packages/shared /tmp/packages/shared
 COPY ./lerna.json /tmp/lerna.json
 COPY ./package.json /tmp/package.json
@@ -14,27 +14,27 @@ WORKDIR /tmp/
 
 FROM builder-base AS builder-prod
 
-ARG ONBOARDING_WEB_APP_PATH_PREFIX
+ARG BOARD_WEB_APP_PATH_PREFIX
 
 RUN npm install
 
-WORKDIR /tmp/packages/onboarding
+WORKDIR /tmp/packages/board
 
 RUN npm run build:prod
 
 FROM builder-base AS development
 
-ENV ONBOARDING_WEB_APP_PATH_PREFIX="/app/onboarding"
+ENV BOARD_WEB_APP_PATH_PREFIX="/app/board"
 
 RUN npm install
 
 ENTRYPOINT ["npm", "run"]
-CMD ["start-onboarding"]
+CMD ["start-board"]
 
 FROM ${SERVER_BASE_IMAGE} AS production
 
 LABEL maintainer="egor.rumyancev.9494@mail.ru"
-LABEL org.opencontainers.image.title="Onboarding Web APP"
+LABEL org.opencontainers.image.title="Board Web APP"
 LABEL org.opencontainers.image.description="Statics service react web application"
 LABEL org.opencontainers.image.url="https://github.com/egorov-m/onboarding"
 LABEL org.opencontainers.image.source="https://github.com/egorov-m/onboarding"
@@ -42,8 +42,8 @@ LABEL org.opencontainers.image.documentation="https://github.com/egorov-m/onboar
 LABEL org.opencontainers.image.vendor=""
 LABEL org.opencontainers.image.authors="egor.rumyancev.9494@mail.ru"
 
-COPY ./packages/onboarding/docker/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder-prod /tmp/packages/onboarding/build /usr/share/nginx/html/
+COPY ./packages/board/docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder-prod /tmp/packages/board/build /usr/share/nginx/html/
 
 ARG SOURCE_COMMIT
 ENV ONBOARDING_API_BUILD=${SOURCE_COMMIT:-unknown}

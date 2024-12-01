@@ -2,12 +2,23 @@ services:
   onboarding-web-app:
     build:
       target: development
-    environment:
-      - REACT_APP_SERVER_PATH_PREFIX=${ONBOARDING_WEB_APP_PATH_PREFIX}
     ports:
       - "8083:80"
     volumes:
       - ${DEPLOY_DIR}/projects/frontend/packages/onboarding:/tmp/packages/onboarding
+      - ${DEPLOY_DIR}/projects/frontend/packages/shared:/tmp/packages/shared
+      - ${DEPLOY_DIR}/projects/frontend/lerna.json:/tmp/lerna.json
+      - ${DEPLOY_DIR}/projects/frontend/package.json:/tmp/package.json
+      - ${DEPLOY_DIR}/projects/frontend/package-lock.json:/tmp/package-lock.json
+      - ${DEPLOY_DIR}/projects/frontend/tsconfig.json:/tmp/tsconfig.json
+
+  board-web-app:
+    build:
+      target: development
+    ports:
+      - "8084:80"
+    volumes:
+      - ${DEPLOY_DIR}/projects/frontend/packages/board:/tmp/packages/board
       - ${DEPLOY_DIR}/projects/frontend/packages/shared:/tmp/packages/shared
       - ${DEPLOY_DIR}/projects/frontend/lerna.json:/tmp/lerna.json
       - ${DEPLOY_DIR}/projects/frontend/package.json:/tmp/package.json
@@ -44,7 +55,6 @@ services:
   onboarding-db:
     ports:
       - "5551:5432"
-
 #  minio:
 #    ports:
 #      - "9900:9000"
