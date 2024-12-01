@@ -1,7 +1,7 @@
 import { createGlobalStyle } from "styled-components";
 import { Colors } from "../constants/Colors";
 
-const GlobalStyles = createGlobalStyle`
+const GlobalStyles = createGlobalStyle<{ disableScroll?: boolean }>`
   *{
   padding: 0;
   margin: 0;
@@ -28,6 +28,11 @@ html, body{
   -moz-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   color: ${({ theme }) => theme.textColor || Colors.Black};
+  ${({ disableScroll }) =>
+    disableScroll &&
+    `
+    overflow: hidden;
+  `}
 }
   
 .icon {

@@ -12,7 +12,6 @@ export const Header = styled.h2`
   font-size: 24px;
   color: ${({ theme }) => theme.textColor || "black"};
   margin-bottom: 20px;
-  font-family: "Montserrat", sans-serif;
 `;
 
 export const RatingContainer = styled.div`

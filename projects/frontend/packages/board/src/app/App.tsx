@@ -1,5 +1,9 @@
 import React from "react";
 import { Board } from "../feature/Board/Board";
+import { ThemeProvider } from "styled-components";
+import { lightTheme } from "shared/constants/Themes";
+
+import GlobalStyles from "shared/ui/GlobalStyles";
 
 function App() {
   const steps = [
@@ -21,9 +25,10 @@ function App() {
   ];
 
   return (
-    <div>
+    <ThemeProvider theme={lightTheme}>
+      <GlobalStyles disableScroll />
       <Board steps={steps} />
-    </div>
+    </ThemeProvider>
   );
 }
 
