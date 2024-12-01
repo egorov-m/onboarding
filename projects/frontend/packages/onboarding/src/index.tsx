@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./app/App";
-import GlobalStyles from "shared/ui/GlobalStyles";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ProjectsPage } from "./pages/ProjectsPage/ProjectsPage";
 import { AnalystPage } from "./pages/AnalystPage/AnalystPage";
@@ -9,7 +8,7 @@ import { ConstructorPage } from "./pages/ConstructorPage/ConstructorPage";
 
 const router = createBrowserRouter([
   {
-    path: `${process.env.REACT_APP_SERVER_PATH_PREFIX}/`,
+    path: `${process.env.ONBOARDING_WEB_APP_PATH_PREFIX}/`,
     element: <App />,
     children: [
       {
@@ -21,7 +20,7 @@ const router = createBrowserRouter([
         element: <AnalystPage />,
       },
       {
-        path: "constructor",
+        path: "constructor/:projectId",
         element: <ConstructorPage />,
       },
     ],
@@ -33,7 +32,6 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <GlobalStyles />
     <RouterProvider router={router} />
   </React.StrictMode>
 );

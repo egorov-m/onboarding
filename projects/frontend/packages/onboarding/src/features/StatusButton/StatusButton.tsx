@@ -1,7 +1,7 @@
 import * as styles from "./StatusButton.styles";
 
 interface StatusButtonProps {
-  status: "Published" | "Saved";
+  status: "published" | "unpublished";
   onToggle: () => void;
 }
 

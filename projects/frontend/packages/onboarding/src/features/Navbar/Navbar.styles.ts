@@ -1,12 +1,11 @@
-import styled from 'styled-components';
-import { Link as RouterLink } from 'react-router-dom';
-import {Colors} from '../../../../shared/constants/Colors';
-import { Container } from 'shared/ui/layout/Container';
+import styled from "styled-components";
+import { Link as RouterLink } from "react-router-dom";
+import { Container } from "shared/ui/layout/Container";
 
 export const NavbarContainer = styled.nav`
   width: 100%;
-  background-color: ${Colors.Orochimaru};
   padding: 1.5rem 0;
+  color: ${(props) => (props.theme.isDarkMode ? "#fff" : "#000")};
 `;
 
 export const NavbarContent = styled(Container)`
@@ -20,6 +19,12 @@ export const LeftSide = styled.div`
   align-items: center;
 `;
 
+export const RightSide = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+`;
+
 export const NavLinks = styled.ul`
   display: flex;
   list-style: none;
@@ -30,8 +35,21 @@ export const NavLinks = styled.ul`
 `;
 
 export const StyledLink = styled(RouterLink)`
-  color: ${Colors.Black};
   text-decoration: none;
   font-size: 1.2rem;
-  font-family: 'Montserrat', sans-serif;
+`;
+
+export const ThemeSwitcher = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 20px;
+
+  svg {
+    fill: currentColor;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
 `;

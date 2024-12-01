@@ -1,16 +1,16 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
   margin: 20px 0;
-  font-family: 'Montserrat', sans-serif;
 
   cursor: pointer;
 
   table-layout: fixed;
 
-  th, td {
+  th,
+  td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #ddd;
@@ -31,13 +31,27 @@ export const StyledTable = styled.table`
   }
 `;
 
-export const Status = styled.span<{ status: 'Published' | 'Saved' }>`
-  color: ${({ status }) => (status === 'Published' ? 'green' : '#c4c400')};
+export const Status = styled.span<{ status: "published" | "unpublished" }>`
+  color: ${({ status }) => (status === "published" ? "green" : "#c4c400")};
 `;
 
 export const NameColumn = styled.td`
-  width: 200px; 
+  width: 200px;
   word-wrap: break-word;
   white-space: normal;
   overflow-wrap: break-word;
+`;
+
+export const IconContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  margin-left: 8px;
+`;
+
+export const FormWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
 `;
