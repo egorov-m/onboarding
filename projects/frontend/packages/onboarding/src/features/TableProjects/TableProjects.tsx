@@ -1,8 +1,8 @@
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 import * as styles from "./TableProjects.styles";
 import { StarRating } from "../StarRating/StarRating";
+import { DateTime } from "luxon";
 import { useNavigate } from "react-router";
-import { Button } from "../../../../shared/ui/components/Button/Button";
 import { Modal } from "../../../../shared/ui/components/Modal/Modal";
 import { Input } from "../../../../shared/ui/components/Input/Input";
 import { StatusButton } from "../StatusButton/StatusButton";
@@ -11,6 +11,7 @@ import {
   updateProject,
 } from "../../pages/ProjectsPage/api/projectsApi";
 import { EditIcon, TrashIcon } from "../../../../shared/ui/icons/index";
+import { toast } from "react-toastify";
 
 interface RowData {
   id: string;
@@ -41,6 +42,19 @@ export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
           state: { name: row.name, status: row.status },
         }
       );
+    }
+  };
+
+  const handleCopyLink = (row: RowData) => {
+    if (row.status === "published") {
+      const link = `${process.env.ONBOARDING_API_BASE_PATH}/app/board/${row.id}`;
+      navigator.clipboard.writeText(link).then(() => {
+        toast.success("Ссылка успешно скопирована!", { autoClose: 2000 });
+      });
+    } else {
+      toast.warning("Проект еще не опубликован. Ссылка недоступна.", {
+        autoClose: 2000,
+      });
     }
   };
 
@@ -114,19 +128,24 @@ export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
                 {row.name}
               </styles.NameColumn>
               <td>
-                {new Intl.DateTimeFormat("ru-RU", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }).format(new Date(row.updated_at))}
+                {DateTime.fromISO(row.updated_at, { zone: "utc" })
+                  .setZone("Asia/Yekaterinburg")
+                  .toLocaleString(DateTime.DATETIME_MED)}{" "}
+                {/* Форматируем дату и время */}
               </td>
               <td>
                 <StarRating rating={row.average_rating} />
               </td>
               <td>
-                <styles.Status status={row.status}>{row.status}</styles.Status>
+                <styles.Status
+                  status={row.status}
+                  onClick={() => handleCopyLink(row)}
+                  style={{
+                    cursor: row.status === "published" ? "pointer" : "default",
+                  }}
+                >
+                  {row.status}
+                </styles.Status>
               </td>
               <td>
                 <styles.IconContainer>

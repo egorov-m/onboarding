@@ -7,6 +7,8 @@ import { CanvasBackground } from "../features/CanvasBackground/CanvasBackground"
 import { ThemeProvider } from "styled-components";
 import { lightTheme, darkTheme } from "shared/constants/Themes";
 import GlobalStyles from "shared/ui/GlobalStyles";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -28,6 +30,18 @@ export default function App() {
           onToggleTheme={toggleTheme}
         />
         <Outlet />
+        <ToastContainer
+          position='top-right'
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme={isDarkMode ? "dark" : "light"}
+        />
       </div>
     </ThemeProvider>
   );
