@@ -52,6 +52,7 @@ button{cursor: pointer;}
 button::-moz-focus-inner{padding: 0;border: 0;}
 a, a:visited {
     text-decoration: none;
+    font-size: 1.2rem;
     color: ${({ theme }) => theme.textColor || Colors.Black};
   }
   a:hover {

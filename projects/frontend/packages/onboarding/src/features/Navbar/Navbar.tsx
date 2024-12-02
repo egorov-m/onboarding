@@ -8,6 +8,7 @@ interface NavbarProps {
     to: string;
     label?: string;
     icon?: React.ReactNode;
+    isExternal?: boolean;
   }[];
   isDarkMode: boolean;
   onToggleTheme: () => void;
@@ -41,9 +42,15 @@ export const Navbar: FC<NavbarProps> = ({
     <styles.NavbarContainer>
       <styles.NavbarContent>
         <styles.LeftSide>
-          <styles.StyledLink to={`${prefix}${links[0].to}`}>
-            {links[0].label}
-          </styles.StyledLink>
+          {links[0].isExternal ? (
+            <a href={links[0].to} target='_blank' rel='noopener noreferrer'>
+              {links[0].label}
+            </a>
+          ) : (
+            <styles.StyledLink to={`${prefix}${links[0].to}`}>
+              {links[0].label}
+            </styles.StyledLink>
+          )}
 
           <styles.NavLinks>
             {links.slice(1, -1).map((link, index) => (

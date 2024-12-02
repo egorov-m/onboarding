@@ -4,16 +4,14 @@ import * as styles from "./StarRating.styles";
 
 interface StarRatingProps {
   maxStars: number;
-  onRate: (rating: number) => void;
 }
 
-export const StarRating: React.FC<StarRatingProps> = ({ maxStars, onRate }) => {
+export const StarRating: React.FC<StarRatingProps> = ({ maxStars }) => {
   const [hoveredStar, setHoveredStar] = useState<number | null>(null);
   const [selectedRating, setSelectedRating] = useState<number>(0);
 
   const handleClick = (rating: number) => {
     setSelectedRating(rating);
-    onRate(rating);
   };
 
   const handleMouseEnter = (index: number) => {
