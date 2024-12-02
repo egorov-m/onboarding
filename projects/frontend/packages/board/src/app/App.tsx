@@ -1,33 +1,21 @@
-import React from "react";
-import { Board } from "../feature/Board/Board";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 import { lightTheme } from "shared/constants/Themes";
+import { BoardPage } from "../pages/BoardPage/BoardPage";
 
 import GlobalStyles from "shared/ui/GlobalStyles";
 
 function App() {
-  const steps = [
+  const router = createBrowserRouter([
     {
-      title: "Шаг 1: Начало",
-      description: "Это описание первого шага.",
-      image: "https://via.placeholder.com/600x300",
+      path: `${process.env.BOARD_WEB_APP_PATH_PREFIX}/:boardId`,
+      element: <BoardPage />,
     },
-    {
-      title: "Шаг 2: Продолжение",
-      description: "Описание второго шага.",
-      image: "https://via.placeholder.com/600x300",
-    },
-    {
-      title: "Шаг 3: Завершение",
-      description: "Описание третьего шага.",
-      image: "https://via.placeholder.com/600x300",
-    },
-  ];
-
+  ]);
   return (
     <ThemeProvider theme={lightTheme}>
       <GlobalStyles disableScroll />
-      <Board steps={steps} />
+      <RouterProvider router={router} />
     </ThemeProvider>
   );
 }
