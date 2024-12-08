@@ -9,6 +9,11 @@ x-common-security-opt: &common-security-opt
   security_opt:
     - no-new-privileges:true
 
+x-clickhouse-env: &clickhouse-env
+  CLICKHOUSE_DB: ${BOARD_EVENTS_DB_NAME}
+  CLICKHOUSE_USER: ${BOARD_EVENTS_DB_USER}
+  CLICKHOUSE_PASSWORD: ${BOARD_EVENTS_DB_PASSWORD}
+
 services:
   onboarding-web-app:
     build:
@@ -78,10 +83,16 @@ services:
       - S3_ACCESS_KEY=${S3_ROOT_USER}
       - S3_SECRET_KEY=${S3_ROOT_PASSWORD}
       - S3_BUCKETS_PREFIX=${S3_BUCKETS_PREFIX}
+      - BOARD_EVENTS_DB_HOST=${BOARD_EVENTS_DB_HOST}
+      - BOARD_EVENTS_DB_PORT=${BOARD_EVENTS_DB_PORT}
+      - BOARD_EVENTS_DB_NAME=${BOARD_EVENTS_DB_NAME}
+      - BOARD_EVENTS_DB_USER=${BOARD_EVENTS_DB_USER}
+      - BOARD_EVENTS_DB_PASSWORD=${BOARD_EVENTS_DB_PASSWORD}
     networks:
       - onboarding-db
 #      - onboarding-minio
       - onboarding-api-proxy
+      - board-events-db
     depends_on:
       traefik:
         condition: service_healthy
@@ -137,8 +148,14 @@ services:
       - ONBOARDING_S3_SECRET_KEY=${S3_ROOT_PASSWORD}
       - ONBOARDING_S3_BUCKETS_PREFIX=${S3_BUCKETS_PREFIX}
       - BOARD_SYNC_TOKEN_SECRET=${BOARD_SYNC_TOKEN_SECRET}
+      - BOARD_EVENTS_DB_HOST=${BOARD_EVENTS_DB_HOST}
+      - BOARD_EVENTS_DB_PORT=${BOARD_EVENTS_DB_PORT}
+      - BOARD_EVENTS_DB_NAME=${BOARD_EVENTS_DB_NAME}
+      - BOARD_EVENTS_DB_USER=${BOARD_EVENTS_DB_USER}
+      - BOARD_EVENTS_DB_PASSWORD=${BOARD_EVENTS_DB_PASSWORD}
     networks:
       - onboarding-db
+      - board-events-db
       #      - onboarding-minio
       - board-api-proxy
     depends_on:
@@ -172,9 +189,7 @@ services:
     image: ${BOARD_CLICKHOUSE_IMAGE}
     container_name: ${PROJECT_NAME}_board-clickhouse
     environment:
-      - CLICKHOUSE_DB=${BOARD_EVENTS_DB_NAME}
-      - CLICKHOUSE_USER=${BOARD_EVENTS_DB_USER}
-      - CLICKHOUSE_PASSWORD=${BOARD_EVENTS_DB_PASSWORD}
+      <<: *clickhouse-env
     networks:
       - board-events-db
     volumes:
@@ -309,6 +324,7 @@ services:
     networks:
       - onboarding-web-app-proxy
       - onboarding-api-proxy
+      - board-api-proxy
       - docker-socket-proxy
       - oauth2-proxy
 #      - minio-proxy
@@ -519,6 +535,7 @@ services:
           cpus: "0.5"
           memory: "512m"
       <<: *common-restart-policy
+
 
 volumes:
   board-events-db:
