@@ -193,3 +193,19 @@ class BoardSyncData(BaseSchema):
     text: str
     index: int
     blobs: Optional[List[BoardSyncDataBlob]]
+
+
+class BoardEventScope(str, Enum):
+    board = "board"
+
+
+class AnalyticsFunnelBoardStepItem(BaseSchema):
+    step_id: UUID
+    step_title: str
+    step_index: int
+    step_count_users: int
+    step_percentage_users: float
+
+
+class AnalyticsFunnelBoardStepsListResponse(_ListResponse):
+    items: List[AnalyticsFunnelBoardStepItem]
