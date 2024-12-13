@@ -1,36 +1,24 @@
 import { useEffect, useState } from "react";
 import { getProjects, createProject, Project } from "./api/projectsApi";
-import { SearchProjects } from "../../features/SearchProjects/SearchProjects";
-import { TableProjects } from "../../features/TableProjects/TableProjects";
-import { Container } from "../../../../shared/ui/layout/Container";
-import { Button } from "../../../../shared/ui/components/Button/Button";
-import { Modal } from "../../../../shared/ui/components/Modal/Modal";
-import { Input } from "../../../../shared/ui/components/Input/Input";
+import { SearchProjects, TableProjects } from "@features";
+import { Button, Input, Modal, Container } from "@shared/ui";
 
 import * as styles from "./ProjectsPage.styles";
 
 export const ProjectsPage: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredData, setFilteredData] = useState<Project[]>([]);
-  const [query, setQuery] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [newProjectName, setNewProjectName] = useState<string>("");
 
   useEffect(() => {
     const fetchProjects = async () => {
-      setIsLoading(true);
-      setError(null);
       try {
         const data = await getProjects();
         setProjects(data);
         setFilteredData(data);
-      } catch (error) {
-        setError("Не удалось загрузить проекты");
-      } finally {
-        setIsLoading(false);
+      } catch {
+        console.error("Не удалось загрузить проекты");
       }
     };
 
@@ -38,7 +26,6 @@ export const ProjectsPage: React.FC = () => {
   }, []);
 
   const handleSearch = (query: string) => {
-    setQuery(query);
     const filtered = projects.filter((project) =>
       project.name.toLowerCase().includes(query.toLowerCase())
     );
@@ -57,8 +44,8 @@ export const ProjectsPage: React.FC = () => {
       setFilteredData(data);
       setNewProjectName("");
       setIsModalVisible(false);
-    } catch (error) {
-      setError("Не удалось создать проект");
+    } catch {
+      console.error("Не удалось создать проект");
     }
   };
 

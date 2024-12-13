@@ -22,20 +22,9 @@ export const Navbar: FC<NavbarProps> = ({
   const prefix = `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_WEB_APP_PATH_PREFIX}`;
 
   const handleLoginRedirect = () => {
-    const ssoUrl = "https://cobra-fancy-officially.ngrok-free.app/sso/auth";
-    const params = new URLSearchParams({
-      approval_prompt: "auto",
-      client_id: "app.oidc.onboarding",
-      code_challenge: "random_code_challenge",
-      code_challenge_method: "S256",
-      nonce: "random_nonce",
-      redirect_uri: `${window.location.origin}/oauth2/callback`,
-      response_type: "code",
-      scope: "openid email profile groups",
-      state: encodeURIComponent(window.location.href),
-    });
+    const ssoUrl = `${process.env.ONBOARDING_API_BASE_PATH}/sso/oauth2/sign_out`;
 
-    window.location.href = `${ssoUrl}?${params.toString()}`;
+    window.location.href = ssoUrl;
   };
 
   return (
