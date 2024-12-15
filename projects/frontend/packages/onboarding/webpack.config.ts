@@ -78,6 +78,14 @@ module.exports = (env: EnvVariables) => {
     },
     resolve: {
       extensions: [".tsx", ".ts", ".js"],
+      alias: {
+        "@features": path.resolve(__dirname, "src/features"),
+        "@pages": path.resolve(__dirname, "src/pages"),
+        "@shared/ui": path.resolve(
+          __dirname,
+          "../shared/ui/components/index.ts"
+        ),
+      },
     },
     plugins: [
       new HtmlWebpackPlugin({

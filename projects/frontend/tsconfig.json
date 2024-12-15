@@ -1,5 +1,11 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@features": ["packages/onboarding/src/features/index.ts"],
+      "@pages": ["packages/onboarding/src/pages/*"],
+      "@shared/ui": ["packages/shared/ui/components/index.ts"]
+    },
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -21,8 +27,8 @@
     }
   },
   "include": [
-    "packages/*/src/**/*",
-    "packages/shared/ui/components/Modal",
-    "packages/shared/ui/components/Input"
+    "packages/onboarding/src/**/*",
+    "packages/board/**/*",
+    "packages/shared/**/*"
   ]
 }

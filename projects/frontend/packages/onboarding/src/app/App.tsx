@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-
-import { Navbar } from "../features/Navbar/Navbar";
-import { navLinks } from "../features/Navbar/constants";
+import { useState } from "react";
 import { Outlet } from "react-router";
-import { CanvasBackground } from "../features/CanvasBackground/CanvasBackground";
 import { ThemeProvider } from "styled-components";
 import { lightTheme, darkTheme } from "shared/constants/Themes";
+import { ToastContainer } from "react-toastify";
+import { Navbar, CanvasBackground, navLinks } from "@features";
 import GlobalStyles from "shared/ui/GlobalStyles";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -28,6 +27,18 @@ export default function App() {
           onToggleTheme={toggleTheme}
         />
         <Outlet />
+        <ToastContainer
+          position='top-right'
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme={isDarkMode ? "dark" : "light"}
+        />
       </div>
     </ThemeProvider>
   );

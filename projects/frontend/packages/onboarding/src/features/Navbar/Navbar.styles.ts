@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Link as RouterLink } from "react-router-dom";
-import { Container } from "shared/ui/layout/Container";
+import { Container } from "@shared/ui";
 
 export const NavbarContainer = styled.nav`
   width: 100%;

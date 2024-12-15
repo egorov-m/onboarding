@@ -27,12 +27,13 @@ export const StyledTable = styled.table`
   }
 
   tbody tr:hover {
-    background-color: #f5f5f5;
+    background-color: ${({ theme }) => theme.hoverBg};
   }
 `;
 
 export const Status = styled.span<{ status: "published" | "unpublished" }>`
-  color: ${({ status }) => (status === "published" ? "green" : "#c4c400")};
+  color: ${({ status, theme }) =>
+    status === "published" ? theme.statusPublished : theme.statusUnpublished};
 `;
 
 export const NameColumn = styled.td`

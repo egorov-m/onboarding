@@ -405,7 +405,7 @@ export const OnboardingCanvas = forwardRef(
           };
           setEdges((eds) => {
             const updatedEdges = addEdge(newEdge, eds);
-            saveToLocalStorage(); // Сохраняем в localStorage после обновления связей
+            saveToLocalStorage();
             return updatedEdges;
           });
         } else {
@@ -548,8 +548,6 @@ export const OnboardingCanvas = forwardRef(
           nodeTypes={nodeTypes}
           fitView
         >
-          <MiniMap />
-          <Controls />
           <Background color='#aaa' gap={16} />
         </ReactFlow>
         <Modal

@@ -1,11 +1,10 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { useLocation, useParams } from "react-router";
-import { Container } from "../../../../shared/ui/layout/Container";
-import { OnboardingCanvas } from "../../features/OnboardingCanvas/OnboardingCanvas";
-import { StatusButton } from "../../features/StatusButton/StatusButton";
-import { SaveButton } from "../../features/SaveButton/SaveButton";
-import * as styles from "./ConstructorPage.styles";
+import { OnboardingCanvas, SaveButton, StatusButton } from "@features";
+import { Container } from "@shared/ui";
 import { updateProject } from "../ProjectsPage/api/projectsApi";
+
+import * as styles from "./ConstructorPage.styles";
 
 interface LocationState {
   name: string;

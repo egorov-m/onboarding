@@ -6,7 +6,7 @@ interface CanvasContainerProps {
 
 export const CanvasContainer = styled.div<CanvasContainerProps>`
   height: ${(props) => props.height}px;
-  background-color: #f0f4f8;
+  background-color: ${({ theme }) => theme.bodyBackground};
   display: flex;
   justify-content: center;
   align-items: center;

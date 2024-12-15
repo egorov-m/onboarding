@@ -1,7 +1,7 @@
 import { createGlobalStyle } from "styled-components";
 import { Colors } from "../constants/Colors";
 
-const GlobalStyles = createGlobalStyle`
+const GlobalStyles = createGlobalStyle<{ disableScroll?: boolean }>`
   *{
   padding: 0;
   margin: 0;
@@ -28,6 +28,11 @@ html, body{
   -moz-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   color: ${({ theme }) => theme.textColor || Colors.Black};
+  ${({ disableScroll }) =>
+    disableScroll &&
+    `
+    overflow: hidden;
+  `}
 }
   
 .icon {
@@ -47,6 +52,7 @@ button{cursor: pointer;}
 button::-moz-focus-inner{padding: 0;border: 0;}
 a, a:visited {
     text-decoration: none;
+    font-size: 1.2rem;
     color: ${({ theme }) => theme.textColor || Colors.Black};
   }
   a:hover {
