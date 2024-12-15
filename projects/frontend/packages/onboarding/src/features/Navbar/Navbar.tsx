@@ -20,12 +20,9 @@ export const Navbar: FC<NavbarProps> = ({
   onToggleTheme,
 }) => {
   const prefix = `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_WEB_APP_PATH_PREFIX}`;
-
-  const handleLoginRedirect = () => {
-    const ssoUrl = `${process.env.ONBOARDING_API_BASE_PATH}/sso/oauth2/sign_out`;
-
-    window.location.href = ssoUrl;
-  };
+  const oauthPathPrefix = process.env.OAUTH_PATH_PREFIX || "/oauth2";
+  const onboardingWebAppPathPrefix =
+    process.env.ONBOARDING_WEB_APP_PATH_PREFIX || "/app/onboarding";
 
   return (
     <styles.NavbarContainer>
@@ -57,12 +54,11 @@ export const Navbar: FC<NavbarProps> = ({
             {isDarkMode ? <MoonIcon /> : <SunIcon />}
           </styles.ThemeSwitcher>
 
-          <styles.StyledLink
-            to={`${prefix}${links[links.length - 1].to}`}
-            onClick={handleLoginRedirect}
+          <a
+            href={`${oauthPathPrefix}/sign_out?rd=${onboardingWebAppPathPrefix}`}
           >
             {links[links.length - 1].icon || links[links.length - 1].label}
-          </styles.StyledLink>
+          </a>
         </styles.RightSide>
       </styles.NavbarContent>
     </styles.NavbarContainer>

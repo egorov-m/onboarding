@@ -385,7 +385,7 @@ export const OnboardingCanvas = forwardRef(
       (changes: EdgeChange[]) => {
         setEdges((eds) => {
           const updatedEdges = applyEdgeChanges(changes, eds);
-          saveToLocalStorage();
+          saveToLocalStorage(); // Сохраняем связи
           return updatedEdges;
         });
       },

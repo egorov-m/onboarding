@@ -1,7 +1,7 @@
 import React from "react";
+import { useNavigate } from "react-router";
 
 import * as styles from "./SaveButton.styles";
-import { useNavigate } from "react-router";
 
 interface SaveButtonProps {
   onClick: () => void;

@@ -14,7 +14,8 @@ export const ModalWrapper = styled.div<{ visible: boolean }>`
 `;
 
 export const ModalContent = styled.div`
-  background: white;
+  background: ${({ theme }) => theme.bodyBackground};
+  color: ${({ theme }) => theme.textColor};
   padding: 20px;
   border-radius: 8px;
   max-width: 500px;
@@ -41,9 +42,10 @@ export const Button = styled.button`
   cursor: pointer;
   border: none;
   border-radius: 4px;
-  background-color: #007bff;
-  color: white;
+  background-color: ${({ theme }) => theme.buttonBackground};
+  color: ${({ theme }) => theme.buttonTextColor};
+
   &:hover {
-    background-color: #0056b3;
+    background-color: ${({ theme }) => theme.buttonHoverBackground};
   }
 `;

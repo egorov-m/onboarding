@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { Colors } from "../../../../shared/constants/Colors";
 
 export const SearchContainer = styled.div`
   display: flex;
@@ -14,10 +13,12 @@ export const SearchInputWrapper = styled.div`
 
 export const SearchInput = styled.input`
   padding: 0.5rem 1rem 0.5rem 2.5rem;
-  border: 1px solid ${Colors.Orochimaru};
+  border: 1px solid ${({ theme }) => theme.borderColor};
   border-radius: 4px;
   font-size: 1rem;
   width: 100%;
+  background-color: ${({ theme }) => theme.inputBgColor};
+  color: ${({ theme }) => theme.inputTextColor};
 `;
 
 export const SearchIconWrapper = styled.div`

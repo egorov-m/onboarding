@@ -1,17 +1,17 @@
 import { FC, useState } from "react";
-import * as styles from "./TableProjects.styles";
+import { useNavigate } from "react-router";
+
 import { StarRating } from "../StarRating/StarRating";
 import { DateTime } from "luxon";
-import { useNavigate } from "react-router";
-import { Modal } from "../../../../shared/ui/components/Modal/Modal";
-import { Input } from "../../../../shared/ui/components/Input/Input";
+import { Input, Modal } from "@shared/ui";
 import { StatusButton } from "../StatusButton/StatusButton";
 import {
   deleteProject,
   updateProject,
 } from "../../pages/ProjectsPage/api/projectsApi";
-import { EditIcon, TrashIcon } from "../../../../shared/ui/icons/index";
+import { EditIcon, TrashIcon } from "shared/ui/icons";
 import { toast } from "react-toastify";
+import * as styles from "./TableProjects.styles";
 
 interface RowData {
   id: string;
@@ -131,7 +131,6 @@ export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
                 {DateTime.fromISO(row.updated_at, { zone: "utc" })
                   .setZone("Asia/Yekaterinburg")
                   .toLocaleString(DateTime.DATETIME_MED)}{" "}
-                {/* Форматируем дату и время */}
               </td>
               <td>
                 <StarRating rating={row.average_rating} />

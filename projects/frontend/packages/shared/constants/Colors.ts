@@ -8,4 +8,6 @@ export const Colors = {
   DarkBackground: "#1E1E1E",
   LightSelection: "#B3E5FC",
   DarkSelection: "#555555",
+  LightGrey: "#F5F5F5",
+  DarkGrey: "#2C2C2C",
 };

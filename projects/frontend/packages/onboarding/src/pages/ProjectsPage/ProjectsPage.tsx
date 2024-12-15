@@ -61,7 +61,7 @@ export const ProjectsPage: React.FC = () => {
         <SearchProjects onSearch={handleSearch} />
 
         <styles.ButtonWrapper>
-          <Button type='primary' onClick={() => setIsModalVisible(true)}>
+          <Button onClick={() => setIsModalVisible(true)}>
             Создать проект
           </Button>
         </styles.ButtonWrapper>
