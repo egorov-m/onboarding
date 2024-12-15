@@ -35,6 +35,13 @@ BOARD_SYNC_TOKEN_SECRET = environ.get("BOARD_SYNC_TOKEN_SECRET", "secret")
 BOARD_SYNC_TOKEN_ALGORITHM = environ.get("BOARD_SYNC_TOKEN_ALGORITHM", "HS512")
 BOARD_SYNC_TOKEN_EXPIRATION_DAYS = int(environ.get("BOARD_SYNC_TOKEN_EXPIRATION_DAYS", "30"))
 
+BOARD_EVENTS_DB_HOST = environ.get("BOARD_EVENTS_DB_HOST", "localhost")
+BOARD_EVENTS_DB_PORT = int(environ.get("BOARD_EVENTS_DB_PORT", "8123"))
+BOARD_EVENTS_DB_SECURE = loads(environ.get("BOARD_EVENTS_DB_SECURE", "False").lower())
+BOARD_EVENTS_DB_NAME = environ.get("BOARD_EVENTS_DB_NAME", "project_board_events")
+BOARD_EVENTS_DB_USER = environ.get("BOARD_EVENTS_DB_USER", "user_board_events")
+BOARD_EVENTS_DB_PASSWORD = environ.get("BOARD_EVENTS_DB_PASSWORD", "password")
+
 ONBOARDING_DB_HOST = environ.get("ONBOARDING_DB_HOST", "localhost")
 ONBOARDING_DB_PORT = int(environ.get("ONBOARDING_DB_PORT", "5432"))
 ONBOARDING_DB_NAME = environ.get("ONBOARDING_DB_NAME", "project.onboarding")

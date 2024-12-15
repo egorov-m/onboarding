@@ -20,6 +20,7 @@ alembic = "^1.13.3"
 uvicorn = "^0.31.0"
 gunicorn = "^23.0.0"
 minio = "^7.2.9"
+clickhouse-connect = "^0.8.9"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.6.9"

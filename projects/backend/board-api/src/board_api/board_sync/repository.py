@@ -6,6 +6,13 @@ from ..database import onboarding_database as database, queries
 class BoardSyncRepository:
 
     @classmethod
+    async def update_board_rating(cls, board_id: str, rating: float):
+        update_query = queries.update_board_query(board_id, average_rating=rating)
+        board_record = await database.fetch_one(query=update_query)
+
+        return board_record
+
+    @classmethod
     async def get_board(cls, board_id: str):
         get_query = queries.get_board_by_id_query(board_id)
         board_record = await database.fetch_one(query=get_query)
