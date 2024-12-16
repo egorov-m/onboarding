@@ -1,4 +1,4 @@
-import React, {
+import {
   useState,
   useCallback,
   useEffect,
@@ -10,8 +10,6 @@ import ReactFlow, {
   applyEdgeChanges,
   applyNodeChanges,
   Background,
-  Controls,
-  MiniMap,
   Connection,
   Edge,
   EdgeChange,
@@ -28,7 +26,7 @@ import { CustomNode } from "./CustomNode/CustomNode";
 import axios from "axios";
 
 import { v4 as uuidv4 } from "uuid";
-import { Modal } from "shared/ui/components/Modal/Modal";
+import { Input, Modal } from "@shared/ui";
 
 interface Step {
   id: string;
@@ -76,19 +74,11 @@ export const OnboardingCanvas = forwardRef(
     const saveToLocalStorage = () => {
       localStorage.setItem(`nodes-${boardId}`, JSON.stringify(nodes));
       localStorage.setItem(`edges-${boardId}`, JSON.stringify(edges));
-      console.log("Состояние узлов и связей сохранено в localStorage.");
     };
 
     const uploadImage = async (file: File, boardStepId: string) => {
-      console.log("uploadImage: Начало загрузки изображения.");
-      console.log("uploadImage: file:", file);
-      console.log("uploadImage: boardStepId:", boardStepId);
-
       const blobData = await createBlob(boardStepId);
-      console.log("uploadImage: Данные Blob после создания:", blobData);
-
       if (!blobData) {
-        console.error("uploadImage: Blob не был создан.");
         return null;
       }
 
@@ -98,7 +88,6 @@ export const OnboardingCanvas = forwardRef(
 
       await linkBlobToStep(boardStepId, blobId);
 
-      console.log("uploadImage: Изображение успешно загружено и привязано!");
       return blobId;
     };
 
@@ -107,17 +96,9 @@ export const OnboardingCanvas = forwardRef(
       file: File
     ) => {
       try {
-        console.log("uploadImageToPresignedUrl: Начало загрузки файла.");
-        console.log("uploadImageToPresignedUrl: URL для загрузки:", actionLink);
-        console.log("uploadImageToPresignedUrl: Файл:", file);
-
         await axios.put(actionLink, file, {
           headers: { "Content-Type": file.type },
         });
-
-        console.log(
-          "uploadImageToPresignedUrl: Изображение успешно загружено!"
-        );
       } catch (error) {
         console.error(
           "uploadImageToPresignedUrl: Ошибка при загрузке изображения:",
@@ -128,18 +109,12 @@ export const OnboardingCanvas = forwardRef(
 
     const getBlobPresignedUrl = async (boardStepId: string, blobId: string) => {
       try {
-        console.log(
-          `Получение предподписанной ссылки для boardStepId: ${boardStepId}, blobId: ${blobId}`
-        );
         const response = await axios.get(
           `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/${boardStepId}/blob/${blobId}`,
           {
             params: { is_include_link: true },
           }
         );
-        console.log("Предподписанная ссылка:", response.data.link);
-        console.log("Полный ответ от сервера:", response.data);
-
         return response.data.link;
       } catch (error) {
         const err = error as AxiosError;
@@ -154,15 +129,9 @@ export const OnboardingCanvas = forwardRef(
 
     const linkBlobToStep = async (boardStepId: string, blobId: string) => {
       try {
-        console.log("linkBlobToStep: Начало привязки Blob.");
-        console.log("linkBlobToStep: boardStepId:", boardStepId);
-        console.log("linkBlobToStep: blobId:", blobId);
-
         await axios.patch(
           `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/${boardStepId}/blob/${blobId}`
         );
-
-        console.log("linkBlobToStep: Blob успешно привязан!");
       } catch (error) {
         console.error(
           "linkBlobToStep: Ошибка при привязке blob к шагу:",
@@ -173,12 +142,10 @@ export const OnboardingCanvas = forwardRef(
 
     const getBlobList = async (boardStepId: string) => {
       try {
-        console.log(`Получение списка Blob'ов для boardStepId: ${boardStepId}`);
         const response = await axios.post(
           `${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/${boardStepId}/blob/list`,
           {}
         );
-        console.log("Ответ от сервера (Blob list):", response.data);
         return response.data.items || [];
       } catch (error) {
         const err = error as AxiosError;
@@ -195,18 +162,11 @@ export const OnboardingCanvas = forwardRef(
       boardStepId: string
     ): Promise<{ blobId: string; actionLink: string } | null> => {
       try {
-        console.log(
-          "createBlob: Начало создания Blob для boardStepId:",
-          boardStepId
-        );
-
         const response = await axios.post(
           `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/${boardStepId}/blob`,
           null,
           { params: { blob_type: "image" } }
         );
-
-        console.log("createBlob: Ответ от API:", response.data);
 
         const { blob_id, action_link } = response.data;
 
@@ -229,20 +189,11 @@ export const OnboardingCanvas = forwardRef(
       blobId: string,
       file: File
     ): Promise<void> => {
-      console.log("updateBlob: Начало процесса обновления Blob.");
-
       try {
-        console.log(
-          "updateBlob: Отправка PATCH запроса для получения предподписанной ссылки..."
-        );
-
         const response = await axios.patch(
           `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/${boardStepId}/blob/${blobId}`,
           null
         );
-
-        console.log("updateBlob: Ответ от сервера:", response.data);
-
         const actionLink = response.data?.action_link;
         if (!actionLink) {
           console.error(
@@ -251,17 +202,11 @@ export const OnboardingCanvas = forwardRef(
           console.error("Полный ответ от сервера:", response.data);
           throw new Error("action_link отсутствует в ответе сервера.");
         }
-
-        console.log("updateBlob: action_link успешно получен:", actionLink);
-
-        console.log("updateBlob: Загрузка файла на action_link...");
         await axios.put(actionLink, file, {
           headers: {
             "Content-Type": file.type,
           },
         });
-
-        console.log("updateBlob: Файл успешно загружен!");
       } catch (error) {
         console.error("updateBlob: Ошибка при обновлении Blob:", error);
 
@@ -301,7 +246,6 @@ export const OnboardingCanvas = forwardRef(
       saveCanvas: () => {
         localStorage.setItem(`nodes-${boardId}`, JSON.stringify(nodes));
         localStorage.setItem(`edges-${boardId}`, JSON.stringify(edges));
-        console.log("Canvas saved locally");
       },
     }));
 
@@ -317,8 +261,6 @@ export const OnboardingCanvas = forwardRef(
             (edge) => edge.source !== nodeId && edge.target !== nodeId
           )
         );
-
-        console.log(`Этап ${nodeId} успешно удалён.`);
       } catch (error) {
         console.error("Ошибка при удалении этапа:", error);
       }
@@ -331,7 +273,7 @@ export const OnboardingCanvas = forwardRef(
           {
             board_id: boardId,
             type: "basic",
-            title: `${nodes.length} этап`,
+            title: `${nodes.length} step`,
             text: "",
             index: nodes.length,
           }
@@ -341,7 +283,7 @@ export const OnboardingCanvas = forwardRef(
 
         const newNode: Node = {
           id: newNodeId,
-          data: { label: `${nodes.length} этап` },
+          data: { label: `${nodes.length} step` },
           position: { x: 100 + nodes.length * 30, y: 100 + nodes.length * 30 },
           type: "customNode",
           sourcePosition: Position.Right,
@@ -385,7 +327,7 @@ export const OnboardingCanvas = forwardRef(
       (changes: EdgeChange[]) => {
         setEdges((eds) => {
           const updatedEdges = applyEdgeChanges(changes, eds);
-          saveToLocalStorage(); // Сохраняем связи
+          saveToLocalStorage();
           return updatedEdges;
         });
       },
@@ -431,7 +373,6 @@ export const OnboardingCanvas = forwardRef(
       try {
         const blobs = await getBlobList(nodeId);
         if (!blobs || blobs.length === 0) {
-          console.warn("У этапа нет связанных Blob'ов.");
           return;
         }
 
@@ -466,15 +407,9 @@ export const OnboardingCanvas = forwardRef(
     const handleSave = async () => {
       if (currentNodeId) {
         try {
-          console.log(
-            `handleSave: Сохранение этапа. currentNodeId: ${currentNodeId}`
-          );
-
           const title =
             nodes.find((node) => node.id === currentNodeId)?.data.label || "";
           const text = nodeText || "";
-
-          console.log("handleSave: Данные для сохранения:", { title, text });
 
           let blob_id =
             nodes.find((node) => node.id === currentNodeId)?.data.blob_id ||
@@ -482,23 +417,16 @@ export const OnboardingCanvas = forwardRef(
 
           if (nodeImage) {
             if (blob_id) {
-              console.log(
-                "handleSave: Обновление существующего изображения..."
-              );
               await updateBlob(currentNodeId, blob_id, nodeImage);
             } else {
-              console.log("handleSave: Загрузка нового изображения...");
               blob_id = await uploadImage(nodeImage, currentNodeId);
             }
-            console.log("handleSave: blob_id после обработки:", blob_id);
           }
 
           await axios.patch(
             `${process.env.ONBOARDING_API_BASE_PATH}${process.env.ONBOARDING_API_PATH_PREFIX}/board_steps/${currentNodeId}`,
             { title, text, blob_id }
           );
-
-          console.log("handleSave: Этап успешно сохранен!");
 
           setNodes(
             nodes.map((node) =>
@@ -551,24 +479,24 @@ export const OnboardingCanvas = forwardRef(
           <Background color='#aaa' gap={16} />
         </ReactFlow>
         <Modal
-          title={`Добавить данные для этапа ${nodes.findIndex(
+          title={`Add data for the step ${nodes.findIndex(
             (node) => node.id === currentNodeId
           )}`}
           visible={modalIsOpen}
           onCancel={closeModal}
           onOk={handleSave}
-          okText='Сохранить'
-          cancelText='Отмена'
+          okText='Save'
+          cancelText='Cancel'
         >
           <div>
             {nodeImageUrl ? (
               <img
                 src={nodeImageUrl}
-                alt='Предосмотр'
+                alt='Preview'
                 style={{ width: "100%", height: "auto", marginBottom: "10px" }}
               />
             ) : (
-              <p>Добавьте фотографию</p>
+              <p>Add a photo</p>
             )}
             <input
               type='file'
@@ -577,18 +505,10 @@ export const OnboardingCanvas = forwardRef(
                 e.target.files && setNodeImage(e.target.files[0])
               }
             />
-            <input
-              type='text'
+            <Input
               value={nodeText}
               onChange={(e) => setNodeText(e.target.value)}
-              placeholder='Введите текст...'
-              style={{
-                width: "100%",
-                marginTop: "10px",
-                padding: "10px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-              }}
+              placeholder='Enter text'
             />
           </div>
         </Modal>

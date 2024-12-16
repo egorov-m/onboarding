@@ -158,12 +158,12 @@ export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
       </styles.StyledTable>
 
       <Modal
-        title='Редактировать проект'
+        title='Edit project'
         visible={isEditModalVisible}
         onCancel={() => setIsEditModalVisible(false)}
         onOk={handleModalOk}
-        okText='Сохранить'
-        cancelText='Отмена'
+        okText='Save'
+        cancelText='Cancel'
       >
         {projectToEdit && (
           <styles.FormWrapper>
@@ -172,7 +172,7 @@ export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
               onChange={(e) =>
                 setProjectToEdit({ ...projectToEdit, name: e.target.value })
               }
-              placeholder='Введите название проекта'
+              placeholder='Enter project name'
             />
             <StatusButton
               status={projectToEdit.status}
@@ -183,14 +183,14 @@ export const TableProjects: FC<TableProjectsProps> = ({ data, onUpdate }) => {
       </Modal>
 
       <Modal
-        title='Подтверждение удаления'
+        title='Deletion confirmation'
         visible={isDeleteModalVisible}
         onCancel={() => setIsDeleteModalVisible(false)}
         onOk={handleConfirmDelete}
-        okText='Удалить'
-        cancelText='Отмена'
+        okText='Delete'
+        cancelText='Cancel'
       >
-        <p>Вы уверены, что хотите удалить этот проект?</p>
+        <p>Are you sure you want to delete this project?</p>
       </Modal>
     </div>
   );

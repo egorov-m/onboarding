@@ -4,22 +4,19 @@ import * as styles from "./StarRating.styles";
 
 interface StarRatingProps {
   maxStars: number;
+  onRatingSubmit: (rating: number) => void; // Callback для отправки рейтинга
 }
 
-export const StarRating: React.FC<StarRatingProps> = ({ maxStars }) => {
+export const StarRating: React.FC<StarRatingProps> = ({
+  maxStars,
+  onRatingSubmit,
+}) => {
   const [hoveredStar, setHoveredStar] = useState<number | null>(null);
   const [selectedRating, setSelectedRating] = useState<number>(0);
 
   const handleClick = (rating: number) => {
     setSelectedRating(rating);
-  };
-
-  const handleMouseEnter = (index: number) => {
-    setHoveredStar(index);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredStar(null);
+    onRatingSubmit(rating); // Отправляем рейтинг
   };
 
   return (
@@ -40,8 +37,8 @@ export const StarRating: React.FC<StarRatingProps> = ({ maxStars }) => {
               viewBox='0 0 24 24'
               xmlns='http://www.w3.org/2000/svg'
               onClick={() => handleClick(starIndex)}
-              onMouseEnter={() => handleMouseEnter(starIndex)}
-              onMouseLeave={handleMouseLeave}
+              onMouseEnter={() => setHoveredStar(starIndex)}
+              onMouseLeave={() => setHoveredStar(null)}
             >
               <path d='M12 .587l3.668 7.429 8.2 1.192-5.934 5.794 1.4 8.167L12 18.897l-7.334 3.872 1.4-8.167-5.934-5.794 8.2-1.192z' />
             </styles.Star>

@@ -15,5 +15,5 @@ export const SaveButton: React.FC<SaveButtonProps> = ({ onClick }) => {
     navigate(`${process.env.ONBOARDING_WEB_APP_PATH_PREFIX}/projects`);
   };
 
-  return <styles.Button onClick={handleClick}>Сохранить</styles.Button>;
+  return <styles.Button onClick={handleClick}>Save</styles.Button>;
 };
