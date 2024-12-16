@@ -7,3 +7,4 @@ export { SearchProjects } from "./SearchProjects/SearchProjects";
 export { StarRating } from "./StarRating/StarRating";
 export { StatusButton } from "./StatusButton/StatusButton";
 export { TableProjects } from "./TableProjects/TableProjects";
+export { CustomFunnelChart } from "./FunnelChart/FunnelChart";

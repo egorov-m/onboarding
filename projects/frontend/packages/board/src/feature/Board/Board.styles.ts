@@ -15,23 +15,6 @@ export const SliderWrapper = styled.div`
   position: relative;
 `;
 
-export const SlideContent = styled.div`
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-`;
-
-export const SlideImage = styled.img`
-  max-width: 100%;
-  max-height: 500px;
-  object-fit: contain;
-  margin: 0 auto;
-  display: block;
-`;
-
 export const SliderControls = styled.div`
   display: flex;
   justify-content: space-between;
@@ -40,13 +23,13 @@ export const SliderControls = styled.div`
   top: 50%;
   left: 0;
   right: 0;
-  z-index: 10;
+  z-index: 9999;
   padding: 0 20px;
   transform: translateY(-50%);
 `;
 
 export const SliderButton = styled.button`
-  background-color: #4caf50;
+  background-color: #3a3a3a;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -58,12 +41,12 @@ export const SliderButton = styled.button`
   height: 40px;
 
   &:hover {
-    background-color: #45a049;
+    background-color: #565656;
     transform: scale(1.1);
   }
 
   &:disabled {
-    background-color: #ddd;
+    background-color: #d3d3d3;
     cursor: not-allowed;
   }
 `;
@@ -72,10 +55,27 @@ export const PrevButton = styled(SliderButton)`
   left: 3% !important;
   z-index: 1;
   margin-right: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const NextButton = styled(SliderButton)`
-  margin-left: auto;
   right: 3% !important;
   z-index: 1;
+  margin-left: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const SlideContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(135deg, #f3f4f6, #ffffff);
+  box-sizing: border-box;
 `;

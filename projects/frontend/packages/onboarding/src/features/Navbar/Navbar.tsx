@@ -28,6 +28,10 @@ export const Navbar: FC<NavbarProps> = ({
     <styles.NavbarContainer>
       <styles.NavbarContent>
         <styles.LeftSide>
+          <styles.Logo>
+            Step
+            <span>Flow</span>
+          </styles.Logo>
           {links[0].isExternal ? (
             <a href={links[0].to} target='_blank' rel='noopener noreferrer'>
               {links[0].label}

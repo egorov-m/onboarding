@@ -18,7 +18,7 @@ export const SearchInput = styled.input`
   font-size: 1rem;
   width: 100%;
   background-color: ${({ theme }) => theme.inputBgColor};
-  color: ${({ theme }) => theme.inputTextColor};
+  color: ${({ theme }) => theme.textColor};
 `;
 
 export const SearchIconWrapper = styled.div`

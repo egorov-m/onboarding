@@ -62,7 +62,7 @@ export const ProjectsPage: React.FC = () => {
 
         <styles.ButtonWrapper>
           <Button onClick={() => setIsModalVisible(true)}>
-            Создать проект
+            Create Project
           </Button>
         </styles.ButtonWrapper>
 
@@ -70,17 +70,17 @@ export const ProjectsPage: React.FC = () => {
       </Container>
 
       <Modal
-        title='Создать новый проект'
+        title='Create new project'
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         onOk={handleCreateProject}
-        okText='Создать'
-        cancelText='Отмена'
+        okText='Create'
+        cancelText='Cancel'
       >
         <Input
           value={newProjectName}
           onChange={(e) => setNewProjectName(e.target.value)}
-          placeholder='Введите название проекта'
+          placeholder='Enter the project name'
         />
       </Modal>
     </styles.PageWrapper>

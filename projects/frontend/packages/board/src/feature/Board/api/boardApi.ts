@@ -50,26 +50,56 @@ export const fetchStepData = async ({
   try {
     const url = `${process.env.BOARD_API_BASE_PATH}${process.env.BOARD_API_PATH_PREFIX}/data`;
 
-    const response = await axios.post(
-      url,
-      {
-        board_id: boardId,
-        board_step_id: boardStepId,
-        rating,
-        finalized,
-      },
-      {}
-    );
+    const requestBody = {
+      board_id: boardId,
+      board_step_id: boardStepId,
+      rating,
+      finalized,
+    };
 
-    console.log("Step Data Response:", response.data);
+    console.log("Отправка данных шага:", requestBody);
 
-    if (response.data.errors) {
-      throw new Error(`Ошибка API: ${response.data.errors.join(", ")}`);
-    }
+    const response = await axios.post(url, requestBody);
+
+    console.log("Ответ на данные шага:", response.data);
 
     return response.data;
   } catch (error) {
     console.error("Ошибка при запросе данных шага:", error);
+    throw error;
+  }
+};
+
+export const syncRating = async ({
+  boardId,
+  boardStepId,
+  rating,
+  finalized = true,
+}: {
+  boardId: string;
+  boardStepId: string;
+  rating: number;
+  finalized?: boolean;
+}) => {
+  try {
+    const url = `${process.env.BOARD_API_BASE_PATH}${process.env.BOARD_API_PATH_PREFIX}/sync`;
+
+    const requestBody = {
+      board_id: boardId,
+      board_step_id: boardStepId,
+      rating,
+      finalized,
+    };
+
+    console.log("Отправка данных синхронизации:", requestBody);
+
+    const response = await axios.post(url, requestBody);
+
+    console.log("Ответ на синхронизацию:", response.data);
+
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при отправке синхронизации:", error);
     throw error;
   }
 };
