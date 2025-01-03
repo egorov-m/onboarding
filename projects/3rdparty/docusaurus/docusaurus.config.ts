@@ -3,7 +3,7 @@ import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
-  title: "Onboarding - Documentation",
+  title: "StepFlow - Documentation",
   tagline: "Adapting your customers",
   favicon: "img/favicon.ico",
   url: "https://onboarding-documentation.netlify.app",
@@ -40,7 +40,7 @@ const config: Config = {
       },
     },
     navbar: {
-      title: "Onboarding",
+      title: "StepFlow",
       items: [
         { type: "search", position: "right" },
       ],
@@ -48,7 +48,7 @@ const config: Config = {
     footer: {
       style: "dark",
       links: [],
-      copyright: `Copyright © ${new Date().getFullYear()} Documentation Onboarding Inc`,
+      copyright: `Copyright © ${new Date().getFullYear()} Documentation StepFlow Inc`,
     },
     prism: {
       theme: prismThemes.github,
