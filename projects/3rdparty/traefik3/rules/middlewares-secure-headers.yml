@@ -1,0 +1,23 @@
+http:
+  middlewares:
+    middlewares-secure-headers:
+      headers:
+        accessControlAllowMethods:
+          - GET
+          - OPTIONS
+          - PUT
+        accessControlMaxAge: 100
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        stsSeconds: 63072000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        # forceSTSHeader: true
+        customFrameOptionsValue: SAMEORIGIN  # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+        contentTypeNosniff: true
+        browserXssFilter: true
+        referrerPolicy: "same-origin"
+        permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), vr=()"
+        customResponseHeaders:
+          X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex,"  # disable search engines from indexing hidden server
+          server: ""  # hide server info from visitors

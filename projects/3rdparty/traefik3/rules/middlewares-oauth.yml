@@ -1,0 +1,16 @@
+http:
+  middlewares:
+    middlewares-oauth:
+      forwardAuth:
+        address: "http://oauth2-proxy:4180"
+        trustForwardHeader: true
+        authResponseHeaders:
+          - "X-Auth-Request-User"
+          - "X-Auth-Request-Groups"
+          - "X-Auth-Request-Email"
+          - "X-Auth-Request-Preferred-Username"
+          - "X-Auth-Request-Access-Token"
+          - "X-Forwarded-User"
+          - "X-Forwarded-Groups"
+          - "X-Forwarded-Email"
+          - "X-Forwarded-Preferred-Username"
